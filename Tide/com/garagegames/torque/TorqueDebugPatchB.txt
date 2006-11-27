@@ -1,0 +1,47 @@
+     // TorqueDebugPatcher begin
+     case "-dbgPort":
+        // we must have a next arg
+        $argUsed[$i]++;
+        if ($hasNextArg)
+        {
+	       $GameDebugPort = $nextArg;
+           $argUsed[$i+1]++;
+           $i++;
+        }
+         else
+            error("Error: Missing Command Line argument. Usage: -dbgPort <port>");
+
+     //--------------------
+     case "-dbgPassword":
+        // we must have a next arg
+        $argUsed[$i]++;
+        if ($hasNextArg)
+        {
+	       $GameDebugPassword = $nextArg;
+           $argUsed[$i+1]++;
+           $i++;
+        }
+         else
+            error("Error: Missing Command Line argument. Usage: -dbgPassword <password>");
+
+     //--------------------
+     case "-dbgEnable":
+	    $GameDebugEnable = true;
+        $argUsed[$i]++;
+
+      //--------------------
+      case "-connect":
+         $argUsed[$i]++;
+         if ($hasNextArg)
+         {
+            // mark which server we will automatically connect to
+            setAutoConnect($nextArg);
+            $argUsed[$i+1]++;
+            $i++;
+         }
+         else
+            error("Error: Missing Command Line argument. Usage: -connect <x.x.x.x:port>");
+
+     // TorqueDebugPatcher end
+
+     //--------------------

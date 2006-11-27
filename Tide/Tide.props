@@ -1,0 +1,38 @@
+#
+# Tide plugin properties
+#
+# :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
+#
+
+
+#
+# General plugin properties:
+#
+
+plugin.com.garagegames.torque.tide.TidePlugin.name=Tide
+plugin.com.garagegames.torque.tide.TidePlugin.author=Paul Dana and Stefan Moises
+plugin.com.garagegames.torque.tide.TidePlugin.version=1.0.0
+plugin.com.garagegames.torque.tide.TidePlugin.docs=Tide.html
+plugin.com.garagegames.torque.tide.TidePlugin.depend.0=jedit 04.00.06.00
+plugin.com.garagegames.torque.tide.TidePlugin.depend.1=plugin projectviewer.ProjectPlugin 2.0.2
+
+#
+# Tide menu:
+#
+
+tide.menu = tide-about tide-new tide-complete-word
+tide.menu.label=Tide
+
+#
+# Tide actions:
+#
+
+tide-about.label=About...
+tide-new.label=New Project...
+tide-complete-word.label=Co$mplete Word...
+
+#
+# Error messages:
+#
+
+

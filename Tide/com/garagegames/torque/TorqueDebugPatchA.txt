@@ -1,0 +1,20 @@
+ // TorqueDebugPatcher begin
+$GameDebugEnable = false;
+$GameDebugPort = 28040;
+$GameDebugPassword = "password";
+
+function doEnableDebug()
+{
+   // attempt to auto enable debugging
+   if (!$GameDebugEnable)
+   {
+     echo("NOT enabling debug...");
+     return;
+   }
+
+   echo("DEBUG: enabling debug on port: " @ $GameDebugPort);
+   %cmd = "dbgSetParameters(" @ $GameDebugPort @ "," @ $GameDebugPassword @ ");";
+   echo("DEBUG: evaluating: " @ %cmd);
+   eval(%cmd);
+}
+// TorqueDebugPatcher end

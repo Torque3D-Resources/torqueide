@@ -1,0 +1,16 @@
+TIDE Info Docs
+
+Torque Integrated Development Environment (TIDE) is a free, cross-platform IDE
+for Torque Game Engine scripting. It is implemented in Java as a plug-in for
+the jEdit text editor. You should be
+familiar with TGE scripting. You do not have to own a license to the TGE
+C++ source code, but you must have a game installation (such as the standard
+FPS demo game) that contains a game executable. If you are running windows
+this executable might be c:/torque/example/torqueDemo_DEBUG.exe.
+
+Choose New Project... under the Tide plugin menu to create a new project for
+testing. You must specify the game executable. Tide is capable of launching
+your game and automatically connecting to the Torque built-in telnet debugger.
+However...to pull this off Tide must patch your game script to allow for
+command line options to automatically enable debug mode, set debug port and
+password, etc. You will be prompted before your game scripts will be patched.

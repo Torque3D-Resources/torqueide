@@ -1,0 +1,24 @@
+In this version you can set breakpoints at any time as long as the project
+contains that file. In the previous version of Tide you could only set
+breakpoints after you paused execution. Now you can set breakpoints first
+and hit the "run" button and the breakpoints will be set automatically. Any
+breakpoints you set will cause the program to pause exeuction when they
+are reached.
+
+You dont need to set breakpoints to pause execution. You can just hit
+the Pause Icon on the TideDebug toolbar. It's the second icon from the
+left and looks like two verticle bars. NOTE: the game may not actually
+pause execution at this time! If the game is running but only a startup
+dialog box is showing you may have to 'nudge' the game by hitting the
+tilde key (~) to open the console.
+
+When the game is paused the file that is currently executing will come to the
+front and all the possible places to put a breakpoint are indicated with little
+blue dots in the 'gutter' running down the left of the text area. To place a
+breakpoint put your cursor on the desired line and hit the Set Breakpoint
+icon on the TideDebug toolbar. It looks like a stopsign. A little red stop
+sign icon will appear in the gutter next to that line instead of a blue dot.
+
+Do not edit any files either while in pause mode or while the game is
+running. This is not handled in this version.
+

@@ -1,0 +1,145 @@
+<html>
+<head>
+   <title>TideDebug Plugin</title>
+    <!-- Tide - 
+         (c) 2002, 2003, 2004 Paul Dana and Stefan "Beffy" Moises
+    -->
+</head>
+
+<body bgcolor="#FFFFFF">
+
+
+<table
+    summary="Header"
+    bgcolor="#CCCCFF"
+    cellspacing="0"
+    border="0"
+    width="100%"
+    cols="2"
+>
+    <tr width="100%">
+        <td valign="TOP"><strong><font size="+2">TideDebug</font></strong></td>
+        <td valign="TOP" align="RIGHT"><font size="-1">
+        <strong>Version 1.0.0 (Dec. 31, 2003)</strong>
+        <br>By Paul Dana and Stefan "Beffy" Moises
+        </font></td>
+    </tr>
+</table>
+
+
+<ul>
+    <li><a href="#intro">Introduction</a>
+    <li><a href="#using">Using TideDebug</a>
+</ul>
+
+
+<table
+    summary="Introduction"
+    border="0"
+    cellspacing="0"
+    cellpadding="3"
+    width="100%"
+>
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
+        <a name="intro">Introduction</a></font></strong></td>
+    </tr>
+</table>
+
+<p>
+</p>
+
+<p>
+This version requires:
+</p>
+
+<ul>
+    <li>JDK >= 1.3</li>
+    <li>jEdit >= 4.1.x</li>
+    <li>"ProjectViewer" plugin >= 2.0.2 (for "Search current selection in project" function)</li>
+</ul>
+
+<table
+    border="0"
+    cellspacing="0"
+    cellpadding="3"
+    width="100%"
+>
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
+        <a name="using">Using TideDebug</a></font></strong></td>
+    </tr>
+</table>
+
+		
+		<p>you can see the <b>TIDEDebug</b> menu below the search field (currently Run - Pause - Stop - Step Into -
+		Step Over - Step Out - Toggle Breakpoint are working, "Run To Cursor" and "Add / Remove watch" arent implemented yet).
+		You can pause the process at any time and add/remove breakpoints... although you cant add watches yet,
+		you can check the value of simple variables with the tooltips...
+		<b>TIDEBrowse</b> and <b>TIDEDebug</b> are combined into one "TIDE" menu entry ...
+		there is also a specific "TIDE project" - you have to create a new TIDE project (not a usual ProjectViewer project) 
+		if you want to use the debugger - that's because you have to specifiy your debug parameters which are saved to a
+		TIDE properties file.
+		<br>
+		TIDE will then also ask you to let it patch your "main.cs" file because it needs to make some changes to enable debugging
+		(add command line parameters and a few functions) to that file (it will make a backup of the file first, of course :-)
+		it is called "<b>main_prePatch.cs</b>").
+		<br>
+		<b>NOTE:</b> <i>If your main.cs file is heavily modified TIDE may encounter problems patching it</i>...
+		in that case you´d have to patch a "standard" main.cs (I´ve tested with the Torque HEAD version) and diff your own version manually
+		(I will also put a correctly patched main.cs into the download - you can look for the comments in there:
+		<br>// TorqueDebugPatcher begin
+		<br>... 
+		<br>// TorqueDebugPatcher end
+		<br>).
+		<br><i>Tribes</i> scripters will have to edit the file manually, too! (haven't tested it, but
+		the patching will definately not work there).</p>
+		
+		
+		<p><b>Here is a quick how-to by Paul Dana:</b></p>
+		
+		<p>Choose "<b>New Project...</b>" under the TIDE plugin menu to create a new project for
+		testing. You must specify the game executable. TIDE is capable of launching
+		your game and automatically connecting to the Torque built-in telnet debugger.
+		However...to pull this off TIDE must patch your game script to allow for
+		command line options to automatically enable debug mode, set debug port and
+		password, etc. You will be prompted before your game scripts will be patched.</p>
+		
+		<p>In this version you can set breakpoints at any time as long as the project
+		contains that file. In the previous version of TIDE you could only set
+		breakpoints after you paused execution. Now you can set breakpoints first
+		and hit the "run" button and the breakpoints will be set automatically. Any
+		breakpoints you set will cause the program to pause exeuction when they
+		are reached.</p>
+		
+		<p>You don't need to set breakpoints to pause execution. You can just hit
+		the Pause Icon on the <b>TideDebug</b> toolbar. It's the second icon from the
+		left and looks like two verticle bars.<br>
+		<b>NOTE:</b> the game may not actually
+		pause execution at this time! If the game is running but only a startup
+		dialog box is showing you may have to 'nudge' the game by hitting the
+		tilde key (~) to open the console.</p>
+		
+		<p>When the game is paused the file that is currently executing will come to the
+		front and all the possible places to put a breakpoint are indicated with little
+		green dots in the 'gutter' running down the left of the text area. To place a
+		breakpoint put your cursor on the desired line and hit the "Set Breakpoint"
+		icon on the <b>TideDebug</b> toolbar. It looks like a stopsign. A little red stop
+		sign icon will appear in the gutter next to that line instead of a green dot.</p>
+		
+		<p><i>Do not edit any files either while in pause mode or while the game is
+		running.</i> This is not handled in this version.</p>
+
+<p>
+If you have any feature requests, comments, or if you would like to
+contribute to this project, write to:
+</p>
+
+<ul>
+    <li>Stefan Moises <em>&lt;beffy@gmx.de&gt;</em>;</li>
+</ul>
+
+<p>Enjoy!</p>
+
+</body>
+</html>

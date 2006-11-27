@@ -1,0 +1,5 @@
+    // TorqueDebugPatcher begin
+	  "  -dbgPort <port>        Set debug port (default = 28040)\n"@
+	  "  -dbgPassword <pass>    Set debug password (default = password)\n"@
+	  "  -dbgEnable             Start game in debug mode\n"@
+    // TorqueDebugPatcher end

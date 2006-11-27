@@ -1,0 +1,309 @@
+//-----------------------------------------------------------------------------
+// Torque Game Engine
+//
+// Copyright (c) 2001 GarageGames.Com
+// Portions Copyright (c) 2001 by Sierra Online, Inc.
+//-----------------------------------------------------------------------------
+
+$baseMods   = "common";
+$userMods   = "fps";
+$displayHelp = false;
+
+
+//-----------------------------------------------------------------------------
+// Support functions used to manage the mod string
+
+function pushFront(%list, %token, %delim)
+{
+   if (%list !$= "")
+      return %token @ %delim @ %list;
+   return %token;
+}
+
+function pushBack(%list, %token, %delim)
+{
+   if (%list !$= "")
+      return %list @ %delim @ %token;
+   return %token;
+}
+
+function popFront(%list, %delim)
+{
+   return nextToken(%list, unused, %delim);
+}
+
+
+//------------------------------------------------------------------------------
+// Process command line arguments
+ // TorqueDebugPatcher begin
+$GameDebugEnable = false;
+$GameDebugPort = 28040;
+$GameDebugPassword = "password";
+
+function doEnableDebug()
+{
+   // attempt to auto enable debugging
+   if (!$GameDebugEnable)
+   {
+     echo("NOT enabling debug...");
+     return;
+   }
+
+   echo("DEBUG: enabling debug on port: " @ $GameDebugPort);
+   %cmd = "dbgSetParameters(" @ $GameDebugPort @ "," @ $GameDebugPassword @ ");";
+   echo("DEBUG: evaluating: " @ %cmd);
+   eval(%cmd);
+}
+// TorqueDebugPatcher end
+
+for ($i = 1; $i < $Game::argc ; $i++)
+{
+   $arg = $Game::argv[$i];
+   $nextArg = $Game::argv[$i+1];
+   $hasNextArg = $Game::argc - $i > 1;
+
+   switch$ ($arg)
+   {
+      //--------------------
+     // TorqueDebugPatcher begin
+     case "-dbgPort":
+        // we must have a next arg
+        $argUsed[$i]++;
+        if (%hasNextArg)
+        {
+	       $GameDebugPort = %nextArg;
+           $argUsed[$i+1]++;
+           $i++;
+        }
+         else
+            error("Error: Missing Command Line argument. Usage: -dbgPort <port>");
+
+     //--------------------
+     case "-dbgPassword":
+        // we must have a next arg
+        $argUsed[$i]++;
+        if (%hasNextArg)
+        {
+	       $GameDebugPassword = %nextArg;
+           $argUsed[$i+1]++;
+           $i++;
+        }
+         else
+            error("Error: Missing Command Line argument. Usage: -dbgPassword <password>");
+
+     //--------------------
+     case "-dbgEnable":
+	    $GameDebugEnable = true;
+        $argUsed[$i]++;
+
+      //--------------------
+      case "-connect":
+         $argUsed[$i]++;
+         if ($hasNextArg)
+         {
+            // mark which server we will automatically connect to
+            setAutoConnect($nextArg);
+            $argUsed[$i+1]++;
+            $i++;
+         }
+         else
+            error("Error: Missing Command Line argument. Usage: -connect <x.x.x.x:port>");
+
+     // TorqueDebugPatcher end
+
+     //--------------------
+      case "-log":
+         $argUsed[$i]++;
+         if ($hasNextArg)
+         {
+            // Turn on console logging
+            setLogMode($nextArg);
+            $argUsed[$i+1]++;
+            $i++;
+         }
+         else
+            error("Error: Missing Command Line argument. Usage: -log <Mode: 0,1>");
+
+      //--------------------
+      case "-mod":
+         $argUsed[$i]++;
+         if ($hasNextArg)
+         {
+            // Append the mod to the end of the current list
+            $userMods = strreplace($userMods, $nextArg, "");
+            $userMods = pushFront($userMods, $nextArg, ";");
+            $argUsed[$i+1]++;
+            $i++;
+         }
+         else
+            error("Error: Missing Command Line argument. Usage: -mod <mod_name>");
+
+      //--------------------
+      case "-game":
+         $argUsed[$i]++;
+         if ($hasNextArg)
+         {
+            // Remove all mods, start over with game
+            $userMods = $nextArg;
+            $argUsed[$i+1]++;
+            $i++;
+         }
+         else
+            error("Error: Missing Command Line argument. Usage: -game <game_name>");
+
+      //--------------------
+      case "-show":
+         // A useful shortcut for -mod show
+         $userMods = strreplace($userMods, "show", "");
+         $userMods = pushFront($userMods, "show", ";");
+         $argUsed[$i]++;
+
+      //--------------------
+      case "-console":
+         enableWinConsole(true);
+         $argUsed[$i]++;
+
+      //--------------------
+      case "-jSave":
+         $argUsed[$i]++;
+         if ($hasNextArg)
+         {
+            echo("Saving event log to journal: " @ $nextArg);
+            saveJournal($nextArg);
+            $argUsed[$i+1]++;
+            $i++;
+         }
+         else
+            error("Error: Missing Command Line argument. Usage: -jSave <journal_name>");
+
+      //--------------------
+      case "-jPlay":
+         $argUsed[$i]++;
+         if ($hasNextArg)
+         {
+            playJournal($nextArg,false);
+            $argUsed[$i+1]++;
+            $i++;
+         }
+         else
+            error("Error: Missing Command Line argument. Usage: -jPlay <journal_name>");
+
+      //--------------------
+      case "-jDebug":
+         $argUsed[$i]++;
+         if ($hasNextArg)
+         {
+            playJournal($nextArg,true);
+            $argUsed[$i+1]++;
+            $i++;
+         }
+         else
+            error("Error: Missing Command Line argument. Usage: -jDebug <journal_name>");
+
+      //-------------------
+      case "-help":
+         $displayHelp = true;
+         $argUsed[$i]++;
+   }
+}
+
+
+//-----------------------------------------------------------------------------
+// The displayHelp, onStart, onExit and parseArgs function are overriden
+// by mod packages to get hooked into initialization and cleanup.
+
+function onStart()
+{
+   // Default startup function
+}
+
+function onExit()
+{
+   // OnExit is called directly from C++ code, whereas onStart is
+   // invoked at the end of this file.
+}
+
+function parseArgs()
+{
+   // Here for mod override, the arguments have already
+   // been parsed.
+}
+
+package Help {
+   function onExit() {
+      // Override onExit when displaying help
+   }
+};
+
+function displayHelp() {
+   activatePackage(Help);
+   error(
+      "Torque Demo command line options:\n"@
+      "  -game <game_name>      Launches the engine with <game_name>\n"@
+      "  -mod <mod_name>        Launches the engine with <mod_name>\n"@
+      "  -console               Start up the window console\n"@
+    // TorqueDebugPatcher begin
+	  "  -dbgPort <port>        Set debug port (default = 28040)\n"@
+	  "  -dbgPassword <pass>    Set debug password (default = password)\n"@
+	  "  -dbgEnable             Start game in debug mode\n"@
+    // TorqueDebugPatcher end
+      "  -show <shape>          Launch the TS show tool\n"@
+      "  -jSave  <file_name>    Record a journal\n"@
+      "  -jPlay  <file_name>    Play back a journal\n"@
+      "  -jDebug <file_name>    Play back a journal and issue an int3 at the end\n"@
+      "  -help                  Display this help message\n"
+   );
+}
+
+
+//--------------------------------------------------------------------------
+
+// Set the mod path which dictates which directories will be visible
+// to the scripts and the resource engine.
+$modPath = pushback($userMods, $baseMods, ";");
+setModPaths($modPath);
+
+
+
+// Get the first mod on the list, which will be the last to be applied... this
+
+// does not modify the list.
+
+nextToken(%modPath, currentMod, ";");
+
+// Execute startup scripts for each mod, starting at base and working up
+echo("--------- Loading MODS ---------");
+function loadMods(%modPath)
+{
+   %modPath = nextToken(%modPath, token, ";");
+   if (%modPath !$= "")
+      loadMods(%modPath);
+
+   exec(%token @ "/main.cs");
+}
+loadMods($modPath);
+echo("");
+
+// Parse the command line arguments
+echo("--------- Parsing Arguments ---------");
+parseArgs();
+
+// Either display the help message or startup the app.
+if ($displayHelp) {
+   enableWinConsole(true);
+   displayHelp();
+   quit();
+}
+else {
+   onStart();
+   echo("Engine initialized...");
+   // TorqueDebugPatcher begin
+   doEnableDebug();
+   // TorqueDebugPatcher end
+}
+
+// Display an error message for unused arguments
+for ($i = 1; $i < $Game::argc; $i++)  {
+   if (!$argUsed[$i])
+      error("Error: Unkown command line argument: " @ $Game::argv[$i]);
+}

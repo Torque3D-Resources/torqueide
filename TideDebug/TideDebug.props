@@ -1,0 +1,81 @@
+#
+# TideDebug plugin properties
+#
+# :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
+#
+
+
+#
+# General plugin properties:
+#
+
+plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.name=TideDebug
+plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.author=Paul Dana and Stefan Moises
+plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.version=1.0.0
+plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.docs=TideDebug.html
+plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.depend.0=jedit 04.00.06.00
+plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.depend.1=plugin projectviewer.ProjectPlugin 2.0.2
+plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.depend.2=plugin com.garagegames.torque.tide.TidePlugin 0.0
+
+#
+# Debugger menu:
+#
+
+# we can't add debugger stuff to menu just yet...just put a 'help' item there
+#tidedebug.menu=\
+#	tidedebug-start tidedebug-pause tidedebug-stop \
+#	- tidedebug-step-into tidedebug-step-over  tidedebug-run-to-cursor tidedebug-step-out \
+#	- tidedebug-toggle-breakpoint tidedebug-add-watch tidedebug-remove-watch
+tidedebug.menu = tidedebug-about tidedebug-recompile
+tidedebug.menu.label=TideDebug
+
+#
+# Debugger toolbar:
+#
+
+tidedebug.toolbar=\
+	tidedebug-start tidedebug-pause tidedebug-stop \
+	- tidedebug-step-into tidedebug-step-over  tidedebug-run-to-cursor tidedebug-step-out \
+	- tidedebug-toggle-breakpoint tidedebug-add-watch tidedebug-remove-watch
+
+#
+# Debugger actions:
+#
+
+// note: icons here are arbitrarily set to standard icons found
+//       in jedit. At runtime in DebugToolbar.java these icons
+//       are replaced with the TideXXXX.gif icons in this plugin's /icons folder
+
+tidedebug-about.label=About...
+tidedebug-recompile.label=Recompile buffer...
+tidedebug-start.label=Start/Continue Debugger
+tidedebug-start.icon=Play24.gif
+tidedebug-pause.label=Pause Execution
+tidedebug-pause.icon=Pause24.gif
+tidedebug-stop.label=Stop Execution
+tidedebug-stop.icon=Stop24.gif
+tidedebug-step-into.label=Step into
+tidedebug-step-into.icon=Down24.gif
+tidedebug-step-over.label=Step over
+tidedebug-step-over.icon=Forward24.gif
+tidedebug-step-out.label=Step out
+tidedebug-step-out.icon=Up24.gif
+tidedebug-run-to-cursor.label=Run to cursor
+tidedebug-run-to-cursor.icon=Forward24.gif
+tidedebug-toggle-breakpoint.label=Toggle breakpoint
+tidedebug-toggle-breakpoint.icon=Stop24.gif
+tidedebug-add-watch.label=Add watch
+tidedebug-add-watch.icon=ZoomIn24.gif
+tidedebug-remove-watch.label=Remove watch
+tidedebug-remove-watch.icon=ZoomOut24.gif
+tidedebug-remove-breakpoints.label=Remove selected breakpoints
+tidedebug-remove-breakpoints.icon=Delete24.gif
+
+#
+# Error messages:
+#
+
+tidedebug.error.noSession.title=No Debug Session
+tidedebug.error.noSession.message=\
+	No debug session is currently running.
+

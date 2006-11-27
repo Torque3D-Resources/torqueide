@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+    <DOCKABLE NAME="TideBrowse.dock">
+        com.garagegames.torque.tidebrowse.TideBrowse tb = new com.garagegames.torque.tidebrowse.TideBrowse(view, null);
+        tb.setDocked(true);
+        tb;
+    </DOCKABLE>
+</DOCKABLES>

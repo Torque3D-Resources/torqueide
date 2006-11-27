@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="TideBrowse.open">
+        <CODE>
+            com.garagegames.torque.tidebrowse.TideBrowsePlugin.openTideBrowseFor(view);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="TideBrowse.search">
+        <CODE>
+            com.garagegames.torque.tidebrowse.TideBrowse.doSearch(view, buffer);
+        </CODE>
+    </ACTION>
+    <ACTION NAME="TideBrowse.createProjectAutocomplete">
+        <CODE>
+            com.garagegames.torque.tidebrowse.TideBrowse.createProjectAutocomplete(view, buffer);
+        </CODE>
+    </ACTION>
+</ACTIONS>

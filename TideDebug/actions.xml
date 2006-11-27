@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<!-- jEdit buffer local properties: -->
+<!-- :tabSize=8:indentSize=2:noTabs=true:maxLineLen=0: -->
+
+<ACTIONS>
+
+  <ACTION NAME="tidedebug-about">
+    <CODE>
+      com.garagegames.torque.tidedebug.TideDebug.about(view);
+    </CODE>
+  </ACTION>
+
+  <ACTION NAME="tidedebug-recompile">
+    <CODE>
+        com.garagegames.torque.tidedebug.TideDebug.recompileFile(view,buffer);
+    </CODE>
+  </ACTION>
+  
+  <ACTION NAME="tidedebug-start">
+    <CODE>
+      com.garagegames.torque.tidedebug.TideDebug.start(view);
+    </CODE>
+  </ACTION>
+
+
+  <ACTION NAME="tidedebug-pause">
+    <CODE>
+      com.garagegames.torque.tidedebug.TideDebug.pause();
+    </CODE>
+  </ACTION>
+
+
+  <ACTION NAME="tidedebug-stop">
+    <CODE>
+      com.garagegames.torque.tidedebug.TideDebug.stop();
+    </CODE>
+  </ACTION>
+
+
+  <ACTION NAME="tidedebug-step-into">
+    <CODE>
+      com.garagegames.torque.tidedebug.TideDebug.stepIn();
+    </CODE>
+  </ACTION>
+
+
+  <ACTION NAME="tidedebug-step-over">
+    <CODE>
+      com.garagegames.torque.tidedebug.TideDebug.stepOver();
+    </CODE>
+  </ACTION>
+
+
+  <ACTION NAME="tidedebug-step-out">
+    <CODE>
+      com.garagegames.torque.tidedebug.TideDebug.stepOut();
+    </CODE>
+  </ACTION>
+
+
+  <ACTION NAME="tidedebug-run-to-cursor">
+    <CODE>
+      com.garagegames.torque.tidedebug.TideDebug.runToCursor(view);
+    </CODE>
+  </ACTION>
+
+
+  <ACTION NAME="tidedebug-toggle-breakpoint">
+    <CODE>
+      com.garagegames.torque.tidedebug.TideDebug.toggleBreakpoint(view);
+    </CODE>
+  </ACTION>
+
+</ACTIONS>

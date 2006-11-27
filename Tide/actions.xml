@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<!-- jEdit buffer local properties: -->
+<!-- :tabSize=8:indentSize=2:noTabs=true:maxLineLen=0: -->
+
+<ACTIONS>
+
+  <ACTION NAME="tide-about">
+    <CODE>
+        com.garagegames.torque.tide.Tide.about(view);
+    </CODE>
+  </ACTION>
+
+  <ACTION NAME="tide-new">
+    <CODE>
+        com.garagegames.torque.tide.Tide.newProject(view);
+    </CODE>
+  </ACTION>
+
+  <ACTION NAME="tide-complete-word">
+    <CODE>
+            com.garagegames.torque.tide.TideCompleteWord.completeWord(view);
+    </CODE>
+  </ACTION>
+
+</ACTIONS>

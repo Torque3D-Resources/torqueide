@@ -1,0 +1,183 @@
+<html>
+<head>
+   <title>TideBrowse Plugin - Change History</title>
+    <!-- TideBrowse - A Torque Script navigation tool for jEdit
+         (c) 1999 George Latkiewicz
+         (c) 2000, 2001, 2002 Andre Kaplan
+         (c) 2002, 2003, 2006 Stefan "Beffy" Moises
+    -->
+</head>
+<body bgcolor="#FFFFFF">
+
+<table bgcolor="#CCCCFF" summary="TideBrowse plugin header" cellspacing="0" border="0" width="100%" cols="2">
+    <tr width="100%">
+        <td valign="TOP"><strong><font size="+2">TideBrowse Change History</font></strong></td>
+        <td valign="TOP" align="RIGHT"><font size="-1">
+        <strong>Version 0.0.4 (Nov. 27, 2006)</strong>
+        <br>By Stefan "Beffy" Moises &lt;beffy@gmx.de&gt;
+        </font></td>
+    </tr>
+</table>
+
+
+<ul>
+
+    <li><a href="#0_0_4">0.0.4</a>
+    <ul>
+        <li><a href="#0_0_4_intro">Introduction</a></li>
+        <li><a href="#0_0_4_features">Features</a></li>
+    </ul>
+    </li>
+
+<li><a href="#0_0_3">0.0.3</a>
+    <ul>
+        <li><a href="#0_0_3_intro">Introduction</a></li>
+        <li><a href="#0_0_3_features">Features</a></li>
+    </ul>
+    </li>
+
+    <li><a href="#0_0_2">0.0.2</a>
+    <ul>
+        <li><a href="#0_0_2_intro">Introduction</a></li>
+        <li><a href="#0_0_2_features">Features</a></li>
+    </ul>
+    </li>
+
+    <li><a href="#0_0_1">0.0.1</a>
+    <ul>
+        <li><a href="#0_0_1_intro">Introduction</a></li>
+        <li><a href="#0_0_1_features">Features</a></li>
+    </ul>
+    </li>
+</ul>
+
+<table summary="Main table" width="100%">
+<!-- 0.0.4 -->
+    <tr align="LEFT" width="100%">
+        <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
+        <a name="0_0_4">&nbsp;0.0.4 (released Nove. 27, 2006)</a></font></strong></td>
+    </tr>
+
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#DDDDDD" width="100%"><strong>
+        <a name="0_0_4_intro">Introduction</a></strong></td>
+    </tr>
+
+    <tr>
+        <td>TideBrowse 0.0.4 (and the whole TIDE-Suite) is compatible to JEdit 4.2.</td>
+    </tr>
+
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#DDDDDD" width="100%"><strong>
+        <a name="0_0_4_features">Features</a></strong></td>
+    </tr>
+
+    <tr>
+        <td><ul>
+            <li>TIDEBrowse now features simple "autocomplete-as-you-type", which can be toggled in the Options Dialog.
+            It doesn't support fancy context-sensitive, object based function- ect. completions, but it's quite handy imho. For
+            general completions, the file "autocomplete.txt" in the JEdit home dir is used. In addition to that,
+            a file named "project_autocomplete.txt" is generated and saved for every opened TIDE-project (for .cs and .gui files)
+            the first time the project is opened. You can re-generate this file manually from the Plugins-TIDE-TIDEBrowse menu if your
+            project has changed or if you've added a lot of stuff to your files which you'd like to have in the autocompletion.</li>
+            <li>I've also fixed some bugs, e.g. the one that would stop TIDEBrowse from parsing a file when
+            the term "datablock" (as opposed to "dataBlock") was used inside a function.</li>
+        </ul></td>
+    </tr>
+
+
+<!-- 0.0.3 -->
+    <tr align="LEFT" width="100%">
+        <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
+        <a name="0_0_3">&nbsp;0.0.3 (released Dec. 12, 2003)</a></font></strong></td>
+    </tr>
+
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#DDDDDD" width="100%"><strong>
+        <a name="0_0_3_intro">Introduction</a></strong></td>
+    </tr>
+
+    <tr>
+        <td>TideBrowse 0.0.3 does <b>not</b> require the
+		modified "ProjectViewer" plugin anymore. It is now compatible with JEdit 4.1 final (and up, hopefully)
+		and uses the standard ProjectViewer plugin (current version I've tested with is 2.0.2)</td>
+    </tr>
+
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#DDDDDD" width="100%"><strong>
+        <a name="0_0_3_features">Features</a></strong></td>
+    </tr>
+
+    <tr>
+        <td><ul>
+            <li>Fixed incompatibility with JEdit versions > 4.0.x (caused by ProjectViewer version conflicts).
+			You can now use the standard ProjectViewer plugin (>= 2.0.2). Have fun!</li>
+            <li>TIDEBrowse now uses the file types from the ProjectViewer configuration for the "Search for selection..."
+            search - select any text in the current buffer/file, hit the Search button and it will search the <b>current project</b>
+            using the valid file types / extensions of ProjectViewer (don't forget to add .mis, .cs, .gui, .hfl, .dml, .log, .cc, .h, ... there!)</li>
+        </ul></td>
+    </tr>
+
+
+<!-- 0.0.2 -->
+    <tr align="LEFT" width="100%">
+        <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
+        <a name="0_0_2">&nbsp;0.0.2 (released July. 19, 2002)</a></font></strong></td>
+    </tr>
+
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#DDDDDD" width="100%"><strong>
+        <a name="0_0_2_intro">Introduction</a></strong></td>
+    </tr>
+
+    <tr>
+        <td>TideBrowse 0.0.2 requires a 
+		modified "ProjectViewer" plugin to be installed.</td>
+    </tr>
+
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#DDDDDD" width="100%"><strong>
+        <a name="0_0_2_features">Features</a></strong></td>
+    </tr>
+
+    <tr>
+        <td><ul>
+            <li>New "Search current selection in project" function - 
+			requires modified "ProjectViewer" plugin which is also included in the
+			TideBrowe zip you've downloaded.</li>
+        </ul></td>
+    </tr>
+
+
+<!-- 0.0.1 -->
+    <tr align="LEFT" width="100%">
+        <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
+        <a name="0_0_1">&nbsp;0.0.1 (released July. 17, 2002)</a></font></strong></td>
+    </tr>
+
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#DDDDDD" width="100%"><strong>
+        <a name="0_0_1_intro">Introduction</a></strong></td>
+    </tr>
+
+    <tr>
+        <td>TideBrowse 0.0.1 is the first TideBrowse version.
+		<br>It is based on the JBrowse plugin written by George Latkiewicz and Andre Kaplan.</td>
+    </tr>
+
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#DDDDDD" width="100%"><strong>
+        <a name="0_0_1_features">Features</a></strong></td>
+    </tr>
+
+    <tr>
+        <td><ul>
+            <li>Works with jEdit &gt; 4.0pre4</li>
+        </ul></td>
+    </tr>
+
+</table>
+
+</body>
+</html>
+

@@ -1,0 +1,372 @@
+<html>
+<head>
+   <title>TideBrowse Plugin</title>
+    <!-- TideBrowse - Based on the JBrowse plugin for JEdit
+         (c) 1999 George Latkiewicz,
+         (c) 2000, 2001, 2002 Andre Kaplan
+         (c) 2002, 2003, 2006 Stefan "Beffy" Moises
+    -->
+</head>
+
+<body bgcolor="#FFFFFF">
+
+
+<table
+    summary="Header"
+    bgcolor="#CCCCFF"
+    cellspacing="0"
+    border="0"
+    width="100%"
+    cols="2"
+>
+    <tr width="100%">
+        <td valign="TOP"><strong><font size="+2">TideBrowse</font></strong></td>
+        <td valign="TOP" align="RIGHT"><font size="-1">
+        <strong>Version 0.0.4 (Nov. 27, 2006)</strong>
+        <br>By Stefan "Beffy" Moises
+        </font></td>
+    </tr>
+</table>
+
+
+<ul>
+    <li><a href="#intro">Introduction</a>
+    <li><a href="#display">Understanding the TideBrowse Tree Display</a>
+    <li><a href="#controls">TideBrowse Controls</a>
+    <li><a href="#options">TideBrowse Options</a>
+    <li><a href="#navigate">Navigating the TideBrowse Tree</a>
+    <li><a href="#todo">To Do</a>
+    <li><a href="#feedback">Feedback</a>
+</ul>
+
+
+<table
+    summary="Introduction"
+    border="0"
+    cellspacing="0"
+    cellpadding="3"
+    width="100%"
+>
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
+        <a name="intro">Introduction</a></font></strong></td>
+    </tr>
+</table>
+
+<p>
+The &quot;TideBrowse&quot; plug-in provides a tool for
+navigating through Torque script code.
+It is a stripped-down version of the <b>JBrowse</b> plugin written by George Latkiewicz and Andre Kaplan
+changed to handle <b>*cs, *.gui and *.mis</b> files instead of *.java files.
+<br>And instead of listing all classes, packages,
+attributes, etc. of Java files it now lists all Torque functions, datablocks and objects.
+<br>
+It displays a navigation window which uses a tree view to display the
+hierarchy of functions, datablocks and object instantiations for the file in the
+current buffer.
+A single mouse click on one of the nodes in the tree will highlight the
+line in the jEdit buffer where the definition of that item begins.
+Options are provided to control both what is displayed and how.
+<br>
+Another feature is the "Search current selection in project" (accesible through the "Plugins-&gt;TideBrowse" menu
+or via the "Search" button in the TIDEBrowse gui):
+you can select any word/phrase in the current file and search for it in the entire project directory (you can include
+your engine source folders, too) - it searches in all the file types you've entered for the ProjectViewer ("Utilities -> Global Options -> Plugins -> ProjectViewer").
+<b>Don't forget to add Torque related extensions there</b>, e.g.
+<ul>
+    <li>*.cs, *.gui</li>
+    <li>*.cc, *.h</li>
+    <li>*.mis, *.dml</li>
+    <li>*.hfl</li>
+    <li>*.log</li>
+</ul>
+</p>
+
+<p>
+This version requires:
+</p>
+
+<ul>
+    <li>JDK >= 1.3</li>
+    <li>jEdit >= 4.1.x</li>
+    <li>"ProjectViewer" plugin >= 2.0.2 (for "Search current selection in project" function)</li>
+    <li>SideKickPlugin 0.1 (for Autocompletion)</li>
+    <li>ErrorListPlugin 1.2 (for Autocompletion)</li>
+
+</ul>
+
+<p>For the TideBrowse revision history, have a look at the <a href="Change_History.html">Change History</a>.</p>
+
+
+<table
+    summary="Tree Display"
+    border="0"
+    cellspacing="0"
+    cellpadding="3"
+    width="100%"
+>
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
+        <a name="display">Understanding the TideBrowse Tree Display</a></font></strong></td>
+    </tr>
+</table>
+
+<p>
+TideBrowse displays the hierarchy of elements in a tree
+using the options (see below) you have specified. Each element is displayed with one of
+the following icons:
+</p>
+
+<p>
+<img src="com/garagegames/torque/tidebrowse/icons/Function.gif" alt="Function icon"
+>&nbsp;<strong>Function</strong> - all torque script functions.
+<br><br>
+<img src="com/garagegames/torque/tidebrowse/icons/Datablock.gif" alt="Datablock icon"
+>&nbsp;<strong>Datablock</strong> - all Torque datablocks.
+<br><br>
+<img src="com/garagegames/torque/tidebrowse/icons/Object.gif" alt="Object icon"
+>&nbsp;<strong>Object</strong> - new objects (e.g. Terrain, Sun, TSStatic, Trigger,...).
+<br><br>
+<img src="com/garagegames/torque/tidebrowse/icons/Error.gif" alt="Error icon"
+>&nbsp;<strong>Error</strong> -
+indicates the location of a point in the code where TideBrowse encountered what it
+considered a parse error. If any such errors were found an indicator appears
+next to the resize button. You may need to fix the error and re-parse to obtain
+a full hierarchy for the buffer. Any code for which TideBrowse reports a parse
+error should not compile without generating an error as well (if it does then
+TideBrowse has a bug, please let me know!).
+</p>
+
+
+<table
+    summary="TideBrowse controls"
+    border="0"
+    cellspacing="0"
+    cellpadding="3"
+    width="100%"
+>
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
+        <a name="controls">TideBrowse Controls</a></font></strong></td>
+    </tr>
+</table>
+
+<p>
+<img src="com/garagegames/torque/tidebrowse/icons/Parse.gif" alt="Parse button icon">
+<strong>Parse button</strong> - Clicking this button will cause the tree hierarchy
+to be re-built based on the current contents of the active buffer. When TideBrowse is
+opened, it automatically does this (unless the file does not have a TGE related extension like .cs or .gui).
+Changing any options will automatically update the tree display. Thus, the only
+reason to re-parse is because the file contents have changed, or a different buffer
+has been activated or because you are curious what TideBrowse will do if you attempt
+to parse a binary file.
+<br><br>
+<img src="com/garagegames/torque/tidebrowse/icons/Config.gif" alt="Configure button icon">
+<strong>Configure button</strong> - Clicking this button will open, or bring to the foreground,
+the TideBrowse options dialog. This dialog allows you to change, on-the-fly, the current option
+settings for this TideBrowse session. More information on this dialog, including the effect of
+each option setting is described below in the <a href="#options">TideBrowse Options</a> section.
+<br><br>
+<img src="com/garagegames/torque/tidebrowse/icons/Find.gif" alt="Find button icon">
+<strong>Find button</strong> - Clicking this button will search the currently active project
+for the current selection in the active file/buffer and display the results in the HyperSearch Results
+pane which will open as you click. It uses the file extensions configured for the ProjectViewer plugin.
+<br><br>
+<img src="com/garagegames/torque/tidebrowse/icons/Help.gif" alt="Help button icon">
+<strong>Help button</strong> - Clicking this button will open the Help Viewer with the documentation
+for TideBrowse (the HTML page you are now reading).
+</p>
+
+
+<table
+    summary="Navigating the TideBrowse Tree"
+    border="0"
+    cellspacing="0"
+    cellpadding="3"
+    width="100%"
+>
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
+        <a name="navigate">Navigating the TideBrowse Tree</a></font></strong></td>
+    </tr>
+</table>
+
+<p>
+The tree can be navigated using both the mouse and the keyboard.
+The keys and their associated actions, as listed below, are those that are
+common to all the standard look &amp; feels.
+</p>
+
+<table
+    summary="Navigation Keys"
+    border="1"
+    cellpadding="3"
+    cellspacing="1"
+>
+    <tr>
+        <td align="LEFT" valign="TOP"><strong>Action</strong></td>
+        <td align="LEFT" valign="TOP"><strong>Key</strong></td>
+    </tr>
+    <tr>
+        <td>Expand/collapse node</td>
+        <td>Right, Left</td>
+    </tr>
+    <tr>
+        <td>Move up/down one node</td>
+        <td>Up, Down</td>
+    </tr>
+    <tr>
+        <td>Move to first/last node</td>
+        <td>Home, End</td>
+    </tr>
+    <tr>
+        <td>Move up/down one page</td>
+        <td>PgUp, PgDn</td>
+    </tr>
+</table>
+
+
+<table
+    summary="TideBrowse Options"
+    border="0"
+    cellspacing="0"
+    cellpadding="3"
+    width="100%"
+>
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
+        <a name="options">TideBrowse Options</a></font></strong></td>
+    </tr>
+</table>
+
+<p>
+TideBrowse is highly configurable, using a set of option values
+that control the behavior and appearance of the tree that is displayed
+for a parsed Torque script file. A set of default option values is stored
+in a property file, which is loaded each time a new TideBrowse session is
+started. While TideBrowse is running these options may be changed on-the-fly
+using the TideBrowse Options Dialog. The current option values can be saved
+as the new defaults by selecting the &quot;Set As Defaults&quot; button
+and the last saved defaults can be loaded to replace the current values
+by selecting the &quot;Restore Defaults&quot; button. The default option
+values may also be set using the TideBrowse tab of the jEdit plug-in
+options dialog (accessible from the jEdit menu item
+<code>Utilities-&gt;Global&nbsp;Options</code>).
+<br><br>
+The tables below describe the effect of each option value. These options
+are grouped into three basic categories:
+</p>
+
+<h3>General options:</h3>
+
+<table
+    summary="General Options"
+    width="100%"
+    border="1"
+>
+    <tr valign="TOP">
+        <td>Display status&nbsp;bar&nbsp;</td>
+        <td>If set then the status bar, which indicates the total number of classes,
+        interfaces, attributes and methods in the currently parsed file, will be
+        displayed at the bottom of the TideBrowse window.</td>
+    </tr>
+
+    <tr valign="TOP">
+        <td>Automatic reparse</td>
+        <td>If set, TideBrowse automatically reparses the buffer and updates its
+        display when the jEdit buffer changes.</td>
+    </tr>
+
+    <tr valign="TOP">
+        <td>Sort</td>
+        <td>
+        If set, TideBrowse sorts the different elements by their name.
+        </td>
+    </tr>
+</table>
+
+
+<h3>Display options (<em>How</em> to display):</h3>
+
+<p>
+These options specify the format that is to be used to display the elements in the tree.
+Changing any of these options will normally update the display without reloading the
+tree.<br>
+Note: if the tree currently has a very large number of displayed
+nodes (more than 200) then it will be reloaded rather than updated
+for performance reasons.
+</p>
+
+<h4>General Display Options</h4>
+
+<p>
+The following options can be set independently of the current Display Style.
+</p>
+
+<table
+    summary="Display options"
+    width="100%"
+    border="1"
+>
+
+    <tr>
+        <td>Keywords specified by icons</td>
+        <td>If set then the keywords directly associated with the icons for
+        <code>functions, datablocks &amp; objects</code>
+        will be displayed, otherwise they are suppressed.</td>
+    </tr>
+
+    <tr>
+        <td>Line Numbers</td>
+        <td>If set then the line number at which the
+        definition of each element begins will be displayed.</td>
+    </tr>
+
+</table>
+
+<p>
+
+<table summary="To Do" border="0" cellspacing="0" cellpadding="3" width="100%">
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
+        <a name="todo">To Do</a></font></strong></td>
+    </tr>
+</table>
+
+<p>These are the additional features that are currently being considered:</p>
+
+<ul>
+    <li>Extend the "Search current selection in project" to a "go-to-definition/declaration"
+    functionality inside the current project (all script files in
+    the project will be parsed to find the definition if you select/click on a function or variable name).</li>
+    <li>Extend the "go-to-definition/declaration" functionality from only inside script
+    to C++ engine source files.</li>
+</ul>
+
+
+<table
+    summary="Feedback"
+    border="0"
+    cellspacing="0"
+    cellpadding="3"
+    width="100%"
+>
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
+        <a name="feedback">Feedback</a></font></strong></td>
+    </tr>
+</table>
+
+<p>
+If you have any feature requests, comments, or if you would like to
+contribute to this project, write to:
+</p>
+
+<ul>
+    <li>Stefan Moises <em>&lt;beffy@gmx.de&gt;</em>;</li>
+</ul>
+
+<p>Enjoy!</p>
+
+</body>
+</html>

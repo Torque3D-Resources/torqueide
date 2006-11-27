@@ -1,0 +1,117 @@
+<html>
+<head>
+   <title>Tide Plugin</title>
+    <!-- Tide - 
+         (c) 2002, 2003, 2004 Paul Dana and Stefan "Beffy" Moises
+    -->
+</head>
+
+<body bgcolor="#FFFFFF">
+
+
+<table
+    summary="Header"
+    bgcolor="#CCCCFF"
+    cellspacing="0"
+    border="0"
+    width="100%"
+    cols="2"
+>
+    <tr width="100%">
+        <td valign="TOP"><strong><font size="+2">Tide</font></strong></td>
+        <td valign="TOP" align="RIGHT"><font size="-1">
+        <strong>Version 1.0.0 (Dec. 31, 2003)</strong>
+        <br>By Paul Dana and Stefan "Beffy" Moises
+        </font></td>
+    </tr>
+</table>
+
+
+<ul>
+    <li><a href="#intro">Introduction</a>
+    <li><a href="#using">Using Tide</a>
+</ul>
+
+
+<table
+    summary="Introduction"
+    border="0"
+    cellspacing="0"
+    cellpadding="3"
+    width="100%"
+>
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
+        <a name="intro">Introduction</a></font></strong></td>
+    </tr>
+</table>
+
+<p>
+</p>
+
+<p>
+This version requires:
+</p>
+
+<ul>
+    <li>JDK >= 1.3</li>
+    <li>jEdit >= 4.1.x</li>
+    <li>"ProjectViewer" plugin >= 2.0.2 (for "Search current selection in project" function)</li>
+</ul>
+
+<table
+    border="0"
+    cellspacing="0"
+    cellpadding="3"
+    width="100%"
+>
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
+        <a name="using">Using Tide</a></font></strong></td>
+    </tr>
+</table>
+
+		<br>
+		<h3>TIDE plugin installation and setup</h3>
+
+		<p>
+		Launch JEdit, open the plugin manager (Plugins -> Plugin Manager) and hit "Install Plugins".
+		It will search all available plugins on the server and list them.
+		Select the "Project Viewer" plugin and install it.
+		<br>
+		<b>NOTE:</b> I have also packed the current ProjectViewer jar file into the zip, so you can use that, too, if you want.
+		</p>
+		<p>
+		Copy the 3 (or 4, respectively) provided jar files from the zip into your "&lt;JEdit_Install_Dir&gt;/jars" directory.
+		<br>
+		After installing plugins or copying new plugins into the plugins dir, you have to restart JEdit to get it to load them!
+		</p>
+		<p>
+		After restarting, go to the ProjectViewer plugin configuration ("Utilities -> Global Options -> Plugins -> Project Viewer")
+		and <b>add TGE related file extensions</b> under "Extensions to include" (<b>cs mis gui hfl log ml</b>).
+		</p>
+		
+		<p>Select "Plugins -> TIDE" and choose your desired action.
+		<br><br>
+		<img src="images/menu.gif" width="427" height="160" alt="" border="0">
+		<br>TIDEDebug will be added to the JEdit GUI by default:
+		<br><br>
+		<img src="images/debugger.gif" width="379" height="57" alt="" border="0">
+		<br>
+		<br>You can dock <b>TIDEBrowse</b> to the JEdit GUI permanently by adjusting the docking style in
+		"Utilities -> Global Options -> Docking".</p>
+
+
+<p>
+If you have any feature requests, comments, or if you would like to
+contribute to this project, write to:
+</p>
+
+<ul>
+    <li>Stefan Moises <em>&lt;beffy@gmx.de&gt;</em>;</li>
+</ul>
+
+<p>Enjoy!</p>
+
+</body>
+</html>
