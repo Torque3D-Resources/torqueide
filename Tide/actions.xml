@@ -18,11 +18,11 @@
         com.garagegames.torque.tide.Tide.newProject(view);
     </CODE>
   </ACTION>
-
+  <!--
   <ACTION NAME="tide-complete-word">
     <CODE>
             com.garagegames.torque.tide.TideCompleteWord.completeWord(view);
     </CODE>
   </ACTION>
-
+  -->
 </ACTIONS>
