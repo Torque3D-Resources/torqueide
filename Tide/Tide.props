@@ -20,7 +20,8 @@ plugin.com.garagegames.torque.tide.TidePlugin.depend.1=plugin projectviewer.Proj
 # Tide menu:
 #
 
-tide.menu = tide-about tide-new tide-complete-word
+tide.menu = tide-about tide-new
+#tide-complete-word
 tide.menu.label=Tide
 
 #
@@ -29,7 +30,7 @@ tide.menu.label=Tide
 
 tide-about.label=About...
 tide-new.label=New Project...
-tide-complete-word.label=Co$mplete Word...
+#tide-complete-word.label=Co$mplete Word...
 
 #
 # Error messages:

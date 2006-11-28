@@ -41,11 +41,6 @@ public final class TideSideKickParser
    private TideBrowseLineParser parser;
 
    /**
-    *  the error source.
-    */
-   private final DefaultErrorSource phpErrorSource = null;
-
-   /**
     *  the project manager.
     */
    private final ProjectManager projectManager;
@@ -73,6 +68,9 @@ public final class TideSideKickParser
       buildCompletions();
 
       // register event listeners for current project
+      // TODO: REMOVE THEM WITH EVERY CHANGE!!!
+      // hm, although this isnt that cool... so we have to re-generate the project completion file
+      // with every file action... we do it manually from the menu for now instead! :)
 
       /*
        *  VPTProject project = PVActions.getCurrentProject(jEdit.getActiveView());
@@ -108,34 +106,8 @@ public final class TideSideKickParser
                // reload completions
                buildCompletions();
 
-               // register event listeners for current project
-               // TODO: REMOVE THEM WITH EVERY CHANGE!!!
-
-               /*
-                *  VPTProject project = PVActions.getCurrentProject(jEdit.getActiveView());
-                *  project.addProjectListener(new ProjectListener() {
-                *  public void fileAdded(ProjectEvent evt){
-                *  Log.log(Log.DEBUG, TideSideKickParser.class, "+++++++ FILE ADDED, RELOADING AUTOCOMPLETIONS!");
-                *  createProjectAutocomplete();
-                *  }
-                *  public void filesAdded(ProjectEvent evt){
-                *  Log.log(Log.DEBUG, TideSideKickParser.class, "+++++++ FILES ADDED, RELOADING AUTOCOMPLETIONS!");
-                *  createProjectAutocomplete();
-                *  }
-                *  public void fileRemoved(ProjectEvent evt){
-                *  Log.log(Log.DEBUG, TideSideKickParser.class, "+++++++ FILE REMOVED, RELOADING AUTOCOMPLETIONS!");
-                *  createProjectAutocomplete();
-                *  }
-                *  public void filesRemoved(ProjectEvent evt){
-                *  Log.log(Log.DEBUG, TideSideKickParser.class, "+++++++ FILES REMOVED, RELOADING AUTOCOMPLETIONS!");
-                *  createProjectAutocomplete();
-                *  }
-                *  public void propertiesChanged(ProjectEvent evt){
-                *  Log.log(Log.DEBUG, TideSideKickParser.class, "+++++++ PROPERTIES CHANGED, RELOADING AUTOCOMPLETIONS!");
-                *  createProjectAutocomplete();
-                *  }
-                *  });
-                */
+               // register event listeners for newly selected project
+               // ...
             }
 
 
@@ -164,7 +136,8 @@ public final class TideSideKickParser
    private static void buildCompletions() {
 
       // get completions
-      String jeditFolder = System.getProperty("jedit.home");
+      //String jeditFolder = System.getProperty("jedit.home");
+      String jeditFolder = jEdit.getJEditHome();
       completionsList.clear();
 
       File file = new File(jeditFolder, completionFileName);
@@ -468,202 +441,206 @@ public final class TideSideKickParser
       String projectRoot = project.getRootPath();
       BufferedWriter out = null;
 
-      try {
+      // check if this is a TIDE project first:
+      File tidePropsFile = new File(projectRoot, "TideProject.properties");
+      if(tidePropsFile.exists()) {
+         try {
 
-         File projectCompleteFile = new File(projectRoot,
-               "project_autocomplete.txt");
+            File projectCompleteFile = new File(projectRoot,
+                  "project_autocomplete.txt");
 
-         if(projectCompleteFile.exists()) {
-            Log.log(Log.DEBUG, TideSideKickParser.class,
-                  "***READING FILE: *** " +
-                  projectCompleteFile.getPath());
+            if(projectCompleteFile.exists()) {
+               Log.log(Log.DEBUG, TideSideKickParser.class,
+                     "***READING FILE: *** " +
+                     projectCompleteFile.getPath());
 
-            return buildAutoCompletionsFromFile(projectCompleteFile);
-         }
-         else {
+               return buildAutoCompletionsFromFile(projectCompleteFile);
+            }
+            else {
 
-            Collection projectFiles = project.getFiles();
-            Iterator fileIt = projectFiles.iterator();
-            out = new BufferedWriter(new FileWriter(projectCompleteFile.getPath()));
+               Collection projectFiles = project.getFiles();
+               Iterator fileIt = projectFiles.iterator();
+               out = new BufferedWriter(new FileWriter(projectCompleteFile.getPath()));
 
-            while(fileIt.hasNext()) {
+               while(fileIt.hasNext()) {
 
-               VPTNode nextNode = (VPTNode) fileIt.next();
+                  VPTNode nextNode = (VPTNode) fileIt.next();
 
-               if(nextNode != null && nextNode.isFile()) {
+                  if(nextNode != null && nextNode.isFile()) {
 
-                  VPTFile vptFile = (VPTFile) nextNode;
-                  File nextFile = vptFile.getFile();
+                     VPTFile vptFile = (VPTFile) nextNode;
+                     File nextFile = vptFile.getFile();
 
-                  if(nextFile != null) {
+                     if(nextFile != null) {
 
-                     // parse file
-                     String filePath = nextFile.getPath();
+                        // parse file
+                        String filePath = nextFile.getPath();
 
-                     if(!filePath.toUpperCase().endsWith("CS") &&
-                           !filePath.toUpperCase().endsWith("GUI")) {
+                        if(!filePath.toUpperCase().endsWith("CS") &&
+                              !filePath.toUpperCase().endsWith("GUI")) {
 
-                        continue;
-                     }
+                           continue;
+                        }
 
-                     //Log.log(Log.DEBUG, this, "nextFile.getPath(): " + filePath);
-                     //Log.log(Log.DEBUG, this, "nextFile.getParent(): " + nextFile.getParent());
-                     BufferedReader in = null;
+                        //Log.log(Log.DEBUG, this, "nextFile.getPath(): " + filePath);
+                        //Log.log(Log.DEBUG, this, "nextFile.getParent(): " + nextFile.getParent());
+                        BufferedReader in = null;
 
-                     try {
-                        in = new BufferedReader(new FileReader(
-                              nextFile));
+                        try {
+                           in = new BufferedReader(new FileReader(
+                                 nextFile));
 
-                        for(String line;
-                              (line = in.readLine()) != null; ) {
+                           for(String line;
+                                 (line = in.readLine()) != null; ) {
 
-                           if(!line.trim().startsWith("//")) {
+                              if(!line.trim().startsWith("//")) {
 
-                              String nextToken = "";
+                                 String nextToken = "";
 
-                              // remove non-alphanum chars from line first and replace them with spaces
-                              char[] nonalphas = new char[line.length()];
-                              int nonalphacount = 0;
+                                 // remove non-alphanum chars from line first and replace them with spaces
+                                 char[] nonalphas = new char[line.length()];
+                                 int nonalphacount = 0;
 
-                              for(int l = 0; l < line.length(); l++) {
+                                 for(int l = 0; l < line.length(); l++) {
 
-                                 // leave comments intact for now
-                                 boolean isComment = false;
+                                    // leave comments intact for now
+                                    boolean isComment = false;
 
-                                 if(line.charAt(l) == '/' &&
-                                       line.charAt(l + 1) == '/') {
-                                    isComment = true;
-                                 }
+                                    if(line.charAt(l) == '/' &&
+                                          line.charAt(l + 1) == '/') {
+                                       isComment = true;
+                                    }
 
-                                 if(!Character.isLetterOrDigit(line.charAt(
-                                       l)) &&
-                                       !isComment) {
-                                    nonalphas[nonalphacount] = line.charAt(
-                                          l);
-                                    nonalphacount++;
-                                 }
-                              }
-
-                              for(int c = 0;
-                                    c < nonalphas.length;
-                                    c++) {
-                                 line = line.replace(nonalphas[c],
-                                       ' ');
-                              }
-
-                              //Log.log(Log.DEBUG, this, "***LINE*** " + line);
-                              //synchronized(retList)
-                              //{
-                              StringTokenizer st =
-                                    new StringTokenizer(line);
-
-                              while(st.hasMoreTokens()) {
-                                 nextToken = st.nextToken();
-
-                                 // comment before this token?
-                                 if(line.substring(0,
-                                       line.indexOf(
-                                       nextToken))
-                                       .indexOf("//") != -1) {
-
-                                    break;
-                                 }
-
-                                 // check if the token contains only digits
-                                 boolean containsOnlyDigits = true;
-
-                                 for(int s = 0;
-                                       s < nextToken.length();
-                                       s++) {
-
-                                    if(Character.isLetter(nextToken.charAt(
-                                          s))) {
-                                       containsOnlyDigits = false;
+                                    if(!Character.isLetterOrDigit(line.charAt(
+                                          l)) &&
+                                          !isComment) {
+                                       nonalphas[nonalphacount] = line.charAt(
+                                             l);
+                                       nonalphacount++;
                                     }
                                  }
 
-                                 //Log.log(Log.DEBUG, this, "***NEXT TOKEN*** " + nextToken);
-                                 if(!retList.contains(nextToken) &&
-                                       nextToken.length() > 2 &&
-                                       !containsOnlyDigits) {
-                                    retList.add(nextToken);
-
-                                    //Log.log(Log.DEBUG, this, "***ADDING NEXT TOKEN*** " + nextToken);
+                                 for(int c = 0;
+                                       c < nonalphas.length;
+                                       c++) {
+                                    line = line.replace(nonalphas[c],
+                                          ' ');
                                  }
+
+                                 //Log.log(Log.DEBUG, this, "***LINE*** " + line);
+                                 //synchronized(retList)
+                                 //{
+                                 StringTokenizer st =
+                                       new StringTokenizer(line);
+
+                                 while(st.hasMoreTokens()) {
+                                    nextToken = st.nextToken();
+
+                                    // comment before this token?
+                                    if(line.substring(0,
+                                          line.indexOf(
+                                          nextToken))
+                                          .indexOf("//") != -1) {
+
+                                       break;
+                                    }
+
+                                    // check if the token contains only digits
+                                    boolean containsOnlyDigits = true;
+
+                                    for(int s = 0;
+                                          s < nextToken.length();
+                                          s++) {
+
+                                       if(Character.isLetter(nextToken.charAt(
+                                             s))) {
+                                          containsOnlyDigits = false;
+                                       }
+                                    }
+
+                                    //Log.log(Log.DEBUG, this, "***NEXT TOKEN*** " + nextToken);
+                                    if(!retList.contains(nextToken) &&
+                                          nextToken.length() > 2 &&
+                                          !containsOnlyDigits) {
+                                       retList.add(nextToken);
+
+                                       //Log.log(Log.DEBUG, this, "***ADDING NEXT TOKEN*** " + nextToken);
+                                    }
+                                 }
+
+                                 //}
                               }
-
-                              //}
                            }
                         }
-                     }
-                     catch(IOException e) {
-                        e.printStackTrace();
-                     }
-                     finally {
+                        catch(IOException e) {
+                           e.printStackTrace();
+                        }
+                        finally {
 
-                        if(in != null) {
+                           if(in != null) {
 
-                           try {
-                              in.close();
-                           }
-                           catch(IOException e) {
-                              e.printStackTrace();
+                              try {
+                                 in.close();
+                              }
+                              catch(IOException e) {
+                                 e.printStackTrace();
+                              }
                            }
                         }
-                     }
 
-                     /*
-                      *  Buffer tempBuf = jEdit.openTemporary(actView, nextFile.getParent(), filePath, true);
-                      *  if(tempBuf != null)
-                      *  {
-                      *  /Log.log(Log.DEBUG, this, "buffer.toString(): " + tempBuf.toString());
-                      *  try
-                      *  {
-                      *  KeywordMap tempMap = tempBuf.getKeywordMapAtOffset(0);
-                      *  if(tempMap != null)
-                      *  {
-                      *  String[] keywords = tempMap.getKeywords();
-                      *  for(int i=0; i<keywords.length;i++)
-                      *  retList.add(keywords[i]);
-                      *  }
-                      *  }
-                      *  catch(Exception ex)
-                      *  {
-                      *  Log.log(Log.ERROR, this, "Error getting buffer keywords: " + ex.getMessage());
-                      *  ex.printStackTrace();
-                      *  }
-                      *  }
-                      */
+                        /*
+                         *  Buffer tempBuf = jEdit.openTemporary(actView, nextFile.getParent(), filePath, true);
+                         *  if(tempBuf != null)
+                         *  {
+                         *  /Log.log(Log.DEBUG, this, "buffer.toString(): " + tempBuf.toString());
+                         *  try
+                         *  {
+                         *  KeywordMap tempMap = tempBuf.getKeywordMapAtOffset(0);
+                         *  if(tempMap != null)
+                         *  {
+                         *  String[] keywords = tempMap.getKeywords();
+                         *  for(int i=0; i<keywords.length;i++)
+                         *  retList.add(keywords[i]);
+                         *  }
+                         *  }
+                         *  catch(Exception ex)
+                         *  {
+                         *  Log.log(Log.ERROR, this, "Error getting buffer keywords: " + ex.getMessage());
+                         *  ex.printStackTrace();
+                         *  }
+                         *  }
+                         */
+                     }
                   }
                }
-            }
 
-            // sort the list
-            Collections.sort(retList);
+               // sort the list
+               Collections.sort(retList);
 
-            // write the list to file for later use
-            Iterator retListIter = retList.iterator();
+               // write the list to file for later use
+               Iterator retListIter = retList.iterator();
 
-            while(retListIter.hasNext()) {
-               out.write(retListIter.next() + "|\n");
+               while(retListIter.hasNext()) {
+                  out.write(retListIter.next() + "|\n");
+               }
             }
          }
-      }
-      catch(Exception ex) {
-         Log.log(Log.ERROR, TideSideKickParser.class,
-               "Error getting project autocompletes: " +
-               ex.getMessage());
-         ex.printStackTrace();
-      }
-      finally {
+         catch(Exception ex) {
+            Log.log(Log.ERROR, TideSideKickParser.class,
+                  "Error getting project autocompletes: " +
+                  ex.getMessage());
+            ex.printStackTrace();
+         }
+         finally {
 
-         if(out != null) {
+            if(out != null) {
 
-            try {
-               out.close();
-            }
-            catch(IOException e) {
-               e.printStackTrace();
+               try {
+                  out.close();
+               }
+               catch(IOException e) {
+                  e.printStackTrace();
+               }
             }
          }
       }
