@@ -330,32 +330,12 @@ public final class TideSideKickParser
       TideSideKickCompletion tideSideKickCompletion = null;
       String lastWord2 = getPreviousWord(caret, buffer);
 
-      /*
-       *  if (lastWord2.equalsIgnoreCase("datablock") && currentWord.equals(" "))
-       *  {
-       *  /Log.log(Log.DEBUG, TideSideKickParser.class, "currentWord : '"+currentWord+"'");
-       *  tideSideKickCompletion = new TideSideKickCompletion("", currentWord + " ");
-       *  tideSideKickCompletion.addItem("PlayerData", "datablock");
-       *  tideSideKickCompletion.addItem("AudioProfile", "datablock");
-       *  return tideSideKickCompletion;
-       *  }
-       *  / hm, doesnt really make sense for functions, does it?
-       *  else if (lastWord2.equalsIgnoreCase("function") && currentWord.equals(" ")) {
-       *  Log.log(Log.DEBUG, TideSideKickParser.class, "currentWord : '"+currentWord+"'");
-       *  tideSideKickCompletion = new TideSideKickCompletion("", currentWord + " ");
-       *  tideSideKickCompletion.addItem("getTransform", "function");
-       *  tideSideKickCompletion.addItem("myfunc2", "function");
-       *  return tideSideKickCompletion;
-       *  }
-       *  else
-       */
-      if(!currentWord.equals(" ")) {
+      if(!currentWord.trim().equals("") && containsChar(currentWord)) {
 
          // get completions from txt file
          ArrayList possibleCompletions = getCompletionBySubstr(lastWord2);
 
          // add buffer keywords
-         //Completion[] bufferCompletions = getBufferCompletions(jEdit.getBuffers(), currentWord, caret);
          Completion[] bufferCompletions = getBufferCompletions(jEdit.getBuffers(),
                currentWord);
 
@@ -363,7 +343,8 @@ public final class TideSideKickParser
 
             for(int i = 0; i < bufferCompletions.length; i++) {
 
-               if(!bufferCompletions[i].toString().equals(lastWord2)) {
+               // we dont want to have the current (partial) word that we are typing in the autocomplete list...
+               if(!lastWord2.endsWith(bufferCompletions[i].toString())) {
                   possibleCompletions.add(bufferCompletions[i].toString());
                }
             }
@@ -424,6 +405,62 @@ public final class TideSideKickParser
       }
 
       return buffer.getText(j + 1, i - j);
+   }
+
+
+   /**
+    *  checks a String if it is alphaNumeric
+    *
+    *@param  str  the String to check
+    *@return      boolean The alphaNumeric value
+    */
+   private boolean isAlphaNumeric(String str) {
+      boolean blnNumeric = false;
+      boolean blnAlpha = false;
+
+      char chr[] = null;
+      if(str != null) {
+         chr = str.toCharArray();
+      }
+
+      for(int i = 0; i < chr.length; i++) {
+         if(chr[i] >= '0' && chr[i] <= '9') {
+            blnNumeric = true;
+            break;
+         }
+      }
+
+      for(int i = 0; i < chr.length; i++) {
+         if((chr[i] >= 'A' && chr[i] <= 'Z') || (chr[i] >= 'a' && chr[i] <= 'z')) {
+            blnAlpha = true;
+            break;
+         }
+      }
+      return (blnNumeric && blnAlpha);
+   }
+
+
+   /**
+    *  Check if a string contains at least one character
+    *
+    *@param  str  the string to check
+    *@return      boolean true if the string contains at least one char
+    */
+   private boolean containsChar(String str) {
+      boolean blnAlpha = false;
+
+      char chr[] = null;
+      if(str != null) {
+         chr = str.toCharArray();
+      }
+
+      for(int i = 0; i < chr.length; i++) {
+         if((chr[i] >= 'A' && chr[i] <= 'Z') || (chr[i] >= 'a' && chr[i] <= 'z')) {
+            blnAlpha = true;
+            break;
+         }
+      }
+      return (blnAlpha);
    }
 
 
