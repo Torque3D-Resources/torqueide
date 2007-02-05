@@ -88,6 +88,9 @@ public class TideSideKickCompletion extends SideKickCompletion {
    public void insert(int index) {
       Object object = items.get(index);
       String insertText = "";
+
+      Log.log(Log.DEBUG, this, "text: " + text + " object: " + object.toString());
+
       int caret = textArea.getCaretPosition();
       if(text.length() != 0) {
          Selection selection = textArea.getSelectionAtOffset(caret);
@@ -102,6 +105,11 @@ public class TideSideKickCompletion extends SideKickCompletion {
          textArea.setSelection(selection);
       }
       insertText = object.toString();
+
+      // remove % and $ from the text to insert in case we are autocompleting a Torque variable
+      // since those are already in "text" and aren't replaced
+      //insertText = insertText.replaceAll("[\\$\\%]", "");
+
       /*
        *  if ("function".equals(lastWord)) {
        *  insertText += "()";

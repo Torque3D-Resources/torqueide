@@ -318,6 +318,7 @@ public final class TideSideKickParser
       JEditTextArea textArea = editPane.getTextArea();
       int caretLine = textArea.getCaretLine();
       int caretInLine = caret - buffer.getLineStartOffset(caretLine);
+      String noWordSep = buffer.getStringProperty("noWordSep");
 
       if(caretInLine == 0) {
 
@@ -325,10 +326,14 @@ public final class TideSideKickParser
       }
 
       String line = buffer.getLineText(caretLine);
-      int wordStart = TextUtilities.findWordStart(line, caretInLine - 1, "");
+      int wordStart = TextUtilities.findWordStart(line, caretInLine - 1, noWordSep + "$%");
+      int wordEnd = TextUtilities.findWordEnd(line, wordStart, noWordSep + "$%");
+      String testWord = line.substring(wordStart, wordEnd);
       String currentWord = line.substring(wordStart, caretInLine);
       TideSideKickCompletion tideSideKickCompletion = null;
       String lastWord2 = getPreviousWord(caret, buffer);
+
+      //Log.log(Log.DEBUG, this, "lastWord2: " + lastWord2 + " currentWord: " + currentWord + " testWord: " + testWord);
 
       if(!currentWord.trim().equals("") && containsChar(currentWord)) {
 
@@ -337,14 +342,20 @@ public final class TideSideKickParser
 
          // add buffer keywords
          Completion[] bufferCompletions = getBufferCompletions(jEdit.getBuffers(),
-               currentWord);
+         /*
+          *  currentWord
+          */
+               lastWord2, buffer);
 
          if(bufferCompletions.length > 0) {
 
             for(int i = 0; i < bufferCompletions.length; i++) {
 
                // we dont want to have the current (partial) word that we are typing in the autocomplete list...
-               if(!lastWord2.endsWith(bufferCompletions[i].toString())) {
+               // at least, if it's not a short variable, e.g. %i or something...
+               if(!lastWord2.endsWith(bufferCompletions[i].toString()) ||
+                     ((lastWord2.startsWith("$") || lastWord2.startsWith("%")) && lastWord2.length() < 3)
+                     ) {
                   possibleCompletions.add(bufferCompletions[i].toString());
                }
             }
@@ -358,8 +369,7 @@ public final class TideSideKickParser
                   currentWord, lastWord2);
 
             for(int i = 0; i < possibleCompletions.size(); i++) {
-               tideSideKickCompletion.addItem(possibleCompletions.get(i),
-                     currentWord);
+               tideSideKickCompletion.addItem(possibleCompletions.get(i), currentWord);
             }
 
             return tideSideKickCompletion;
@@ -397,8 +407,8 @@ public final class TideSideKickParser
 
          char c = buffer.getText(j, 1).charAt(0);
 
-         //if (Character.isWhitespace(c)) break;
-         if(Character.isWhitespace(c) || c == '.' || c == ':') {
+         if(Character.isWhitespace(c) || c == '.' || c == ':' || c == '(' || c == ')' || c == '{' || c == '}'
+                || c == '[' || c == ']') {
 
             break;
          }
@@ -455,7 +465,7 @@ public final class TideSideKickParser
       }
 
       for(int i = 0; i < chr.length; i++) {
-         if((chr[i] >= 'A' && chr[i] <= 'Z') || (chr[i] >= 'a' && chr[i] <= 'z')) {
+         if((chr[i] >= 'A' && chr[i] <= 'Z') || (chr[i] >= 'a' && chr[i] <= 'z') || (chr[i] == '$') || (chr[i] == '%')) {
             blnAlpha = true;
             break;
          }
@@ -519,8 +529,6 @@ public final class TideSideKickParser
                            continue;
                         }
 
-                        //Log.log(Log.DEBUG, this, "nextFile.getPath(): " + filePath);
-                        //Log.log(Log.DEBUG, this, "nextFile.getParent(): " + nextFile.getParent());
                         BufferedReader in = null;
 
                         try {
@@ -550,7 +558,10 @@ public final class TideSideKickParser
 
                                     if(!Character.isLetterOrDigit(line.charAt(
                                           l)) &&
-                                          !isComment) {
+                                          !isComment
+                                           && !(line.charAt(l) == '$')
+                                    // store global vars, too!
+                                          ) {
                                        nonalphas[nonalphacount] = line.charAt(
                                              l);
                                        nonalphacount++;
@@ -564,9 +575,6 @@ public final class TideSideKickParser
                                           ' ');
                                  }
 
-                                 //Log.log(Log.DEBUG, this, "***LINE*** " + line);
-                                 //synchronized(retList)
-                                 //{
                                  StringTokenizer st =
                                        new StringTokenizer(line);
 
@@ -595,17 +603,14 @@ public final class TideSideKickParser
                                        }
                                     }
 
-                                    //Log.log(Log.DEBUG, this, "***NEXT TOKEN*** " + nextToken);
                                     if(!retList.contains(nextToken) &&
                                           nextToken.length() > 2 &&
                                           !containsOnlyDigits) {
                                        retList.add(nextToken);
 
-                                       //Log.log(Log.DEBUG, this, "***ADDING NEXT TOKEN*** " + nextToken);
                                     }
                                  }
 
-                                 //}
                               }
                            }
                         }
@@ -625,28 +630,6 @@ public final class TideSideKickParser
                            }
                         }
 
-                        /*
-                         *  Buffer tempBuf = jEdit.openTemporary(actView, nextFile.getParent(), filePath, true);
-                         *  if(tempBuf != null)
-                         *  {
-                         *  /Log.log(Log.DEBUG, this, "buffer.toString(): " + tempBuf.toString());
-                         *  try
-                         *  {
-                         *  KeywordMap tempMap = tempBuf.getKeywordMapAtOffset(0);
-                         *  if(tempMap != null)
-                         *  {
-                         *  String[] keywords = tempMap.getKeywords();
-                         *  for(int i=0; i<keywords.length;i++)
-                         *  retList.add(keywords[i]);
-                         *  }
-                         *  }
-                         *  catch(Exception ex)
-                         *  {
-                         *  Log.log(Log.ERROR, this, "Error getting buffer keywords: " + ex.getMessage());
-                         *  ex.printStackTrace();
-                         *  }
-                         *  }
-                         */
                      }
                   }
                }
@@ -713,64 +696,46 @@ public final class TideSideKickParser
             noWordSep = noWordSep + keywordNoWordSep;
          }
       }
-
       return noWordSep;
    }
 
-
-   //private static Completion[] getBufferCompletions(Buffer buffer, String word,
-   //int caret)
 
    /**
     *  Gets the bufferCompletions attribute of the TideSideKickParser class
     *
     *@param  currBuffers  Description of the Parameter
     *@param  word         Description of the Parameter
+    *@param  currBuffer   Description of the Parameter
     *@return              The bufferCompletions value
     */
    private static Completion[] getBufferCompletions(Buffer[] currBuffers,
-         String word) {
+         String word, Buffer currBuffer) {
 
       // build a list of unique words in all visible buffers
       Set completions = new TreeSet(new MiscUtilities.StringCompare());
       Set buffers = new HashSet();
 
-      // only complete current buffer's keyword map
-
-      /*
-       *  KeywordMap keywordMap = buffer.getKeywordMapAtOffset(caret);
-       *  String noWordSep = getNonAlphaNumericWordChars(
-       *  buffer,keywordMap);
-       */
       for(int i = 0; i < currBuffers.length; i++) {
 
          Buffer b = currBuffers[i];
 
-         //Log.log(Log.DEBUG, TideSideKickParser.class, "BUFFER PATH: " + b.getPath());
          if(buffers.contains(b)) {
 
             continue;
          }
 
+         //Log.log(Log.DEBUG, TideSideKickParser.class, "CHECKIN BUFFER: " + b.getPath());
          buffers.add(b);
 
-         //KeywordMap keywordMap = b.getKeywordMapAtOffset(caret);
          KeywordMap keywordMap = b.getKeywordMapAtOffset(0);
-         String noWordSep = getNonAlphaNumericWordChars(b, keywordMap);
+         String noWordSep = getNonAlphaNumericWordChars(b, keywordMap) + "%$";
 
-         // only complete current buffer's keyword map
          KeywordMap _keywordMap;
 
-         //if(b == buffer)
          _keywordMap = keywordMap;
 
-         /*
-          *  else
-          *  _keywordMap = null;
-          *  int offset = (b == buffer ? caret : 0);
-          */
          int offset = 0;
-         getCompletions(b, word, keywordMap, noWordSep, offset, completions);
+         getCompletions(b, currBuffer, word, keywordMap, noWordSep, offset, completions);
       }
 
       Completion[] completionArray = (Completion[]) completions.toArray(
@@ -789,8 +754,9 @@ public final class TideSideKickParser
     *@param  noWordSep    Description of the Parameter
     *@param  caret        Description of the Parameter
     *@param  completions  Description of the Parameter
+    *@param  currBuffer   Description of the Parameter
     */
-   private static void getCompletions(Buffer buffer, String word,
+   private static void getCompletions(Buffer buffer, Buffer currBuffer, String word,
          KeywordMap keywordMap, String noWordSep,
          int caret, Set completions) {
 
@@ -822,15 +788,24 @@ public final class TideSideKickParser
          int start = buffer.getLineStartOffset(i);
 
          // check for match at start of line
-         //if(line.startsWith(word) && caret != start + word.length())
+         String lineStart = "";
+         if(line.trim().length() > 0) {
+            lineStart = line.substring(0, 1);
+         }
+
          if(!line.trim().startsWith("//") && line.startsWith(word) &&
                caret != start + word.length()) {
 
             String _word = completeWord(line, 0, noWordSep);
             Completion comp = new Completion(_word, false);
 
+            boolean addThis = true;
+            if((currBuffer != buffer) && _word.startsWith("%")) {
+               addThis = false;
+            }
+
             // remove duplicates
-            if(!completions.contains(comp)) {
+            if(addThis && !completions.contains(comp)) {
                completions.add(comp);
             }
          }
@@ -851,12 +826,17 @@ public final class TideSideKickParser
                   String _word = completeWord(line, j + 1, noWordSep);
 
                   // check for comment chars before word
-                  if(line.substring(0, line.indexOf(_word)).indexOf("//") == -1) {
+                  if((!_word.equals("%") && (!_word.equals("$"))) && (line.substring(0, line.indexOf(_word)).indexOf("//") == -1)) {
 
                      Completion comp = new Completion(_word, false);
 
+                     boolean addThis = true;
+                     if((currBuffer != buffer) && _word.startsWith("%")) {
+                        addThis = false;
+                     }
+
                      // remove duplicates
-                     if(!completions.contains(comp)) {
+                     if(addThis && !completions.contains(comp)) {
                         completions.add(comp);
                      }
                   }
@@ -879,8 +859,7 @@ public final class TideSideKickParser
          String noWordSep) {
 
       // '+ 1' so that findWordEnd() doesn't pick up the space at the start
-      int wordEnd = TextUtilities.findWordEnd(line, offset + 1, noWordSep);
-
+      int wordEnd = TextUtilities.findWordEnd(line, offset + 1, noWordSep + "$%");
       return line.substring(offset, wordEnd);
    }
 
