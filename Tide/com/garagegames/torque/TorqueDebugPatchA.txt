@@ -13,7 +13,8 @@ function doEnableDebug()
    }
 
    echo("DEBUG: enabling debug on port: " @ $GameDebugPort);
-   %cmd = "dbgSetParameters(" @ $GameDebugPort @ "," @ $GameDebugPassword @ ");";
+   // the third parameter is only valid for the updated debugger in TGE >= 1.4!
+   %cmd = "dbgSetParameters(" @ $GameDebugPort @ "," @ $GameDebugPassword @ ", false);";
    echo("DEBUG: evaluating: " @ %cmd);
    eval(%cmd);
 }
