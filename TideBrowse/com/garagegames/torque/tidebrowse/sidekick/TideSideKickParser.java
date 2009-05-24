@@ -551,7 +551,7 @@ public final class TideSideKickParser
                                     // leave comments intact for now
                                     boolean isComment = false;
 
-                                    if(line.charAt(l) == '/' &&
+                                    if(l < line.length()-2 && line.charAt(l) == '/' &&
                                           line.charAt(l + 1) == '/') {
                                        isComment = true;
                                     }
