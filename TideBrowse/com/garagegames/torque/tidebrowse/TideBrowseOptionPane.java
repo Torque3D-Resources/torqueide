@@ -109,7 +109,7 @@ public class TideBrowseOptionPane extends AbstractOptionPane
     }
 
 
-    private TideBrowseOptionPane() {
+    public TideBrowseOptionPane() {
         this("TideBrowse");
     }
 

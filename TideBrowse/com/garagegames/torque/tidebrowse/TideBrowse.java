@@ -374,6 +374,7 @@ public class TideBrowse extends JPanel implements EBComponent {
          return false;
       }
       Log.log(Log.DEBUG, view, "TideBrowse - Searching for: " + currSelectionStr);
+
       //return doFunctionSearch(view, buffer);
       return submitSearch(view, currSelectionStr, false);
    }
@@ -417,17 +418,19 @@ public class TideBrowse extends JPanel implements EBComponent {
       SearchAndReplace snr = new SearchAndReplace();
       snr.setIgnoreCase(true);
 
-      // todo: configure these types in option dialog
-      // OR: use the global ProjectManager file types:
+      // use the global ProjectManager file types:
       String importExts = ProjectViewerConfig.getInstance().getImportExts();
       String commaSep = importExts.replace(' ', ',');
       String fileSpec = "*.{" + commaSep + "}";
+      if(regExp)
+    	  fileSpec = "*.{cs,gui}";
       Log.log(Log.DEBUG, view, "File Spec: " + fileSpec);
       snr.setSearchFileSet(new DirectoryListSet(rootDir, fileSpec, true));
 
       //snr.setSearchFileSet(new DirectoryListSet(rootDir, "*.{cs,gui,mis,dml,cc,h,cpp,c,asm}", true));
 
       snr.setSearchString(searchStr);
+      snr.setBeanShellReplace(false);
       snr.setRegexp(regExp);
       // do the search...
       boolean searchSuccess = snr.hyperSearch(view, false);
@@ -462,11 +465,9 @@ public class TideBrowse extends JPanel implements EBComponent {
          return false;
       }
       // build regExp string to search for: function ... SELECTION ... (...)
-      currSelectionStr = "function" + "[\\s*|[a-z|0-9]*::]" + currSelectionStr + "\\s*" + "[[:punct:]].*[[:punct:]]";
-      // OR: [a-z|0-9]*\\s+  which means any number of chars or digits followed by any number (but at least one!) of spaces
+      //currSelectionStr = "function" + currSelectionStr + "\\s*?" + "[[:punct:]].*[[:punct:]]";
+      currSelectionStr = "function" + "[\\s*?][a-z|0-9|:]*?" + currSelectionStr + "\\s*?" + "[[:punct:]].*[[:punct:]]";
       // e.g.:  [a-z|0-9]*[\s*|::]createPlayer\s*[[:punct:]].*[[:punct:]]
-      // BUT: this makes the search *very* slow... :-/
-      //currSelectionStr = "[a-z|0-9]+[\\s*|::]" + currSelectionStr + "\\s*" + "[[:punct:]].*[[:punct:]]";
       Log.log(Log.DEBUG, view, "TideBrowse - Searching for: " + currSelectionStr);
       return submitSearch(view, currSelectionStr, true);
    }

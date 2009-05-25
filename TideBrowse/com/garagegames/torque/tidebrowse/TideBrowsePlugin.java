@@ -20,6 +20,7 @@
 package com.garagegames.torque.tidebrowse;
 
 import com.garagegames.torque.tide.*;
+import com.garagegames.torque.tidebrowse.sidekick.TideSideKickParser;
 
 import java.awt.Cursor;
 
@@ -55,35 +56,6 @@ public class TideBrowsePlugin extends EBPlugin {
     *  Description of the Method
     */
    public void stop() { }
-
-
-   /**
-    *  Description of the Method
-    *
-    *@param  menuItems  Description of the Parameter
-    */
-   public void createMenuItems(Vector menuItems) {
-
-      JMenu menu = GUIUtilities.loadMenu("TideBrowse-menu");
-      JMenu tideMenu = Tide.getTideMenu();
-      if(tideMenu != null) {
-         tideMenu.add(menu);
-         tideMenu.add(new JSeparator());
-      }
-      else {
-         menuItems.addElement(menu);
-      }
-   }
-
-
-   /**
-    *  Adds the TideBrowse options the the Global Options dialog
-    *
-    *@param  od  Description of the Parameter
-    */
-   public void createOptionPanes(OptionsDialog od) {
-      od.addOptionPane(TideBrowseOptionPane.getInstance());
-   }
 
 
    /**
