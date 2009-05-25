@@ -51,7 +51,8 @@ public class TideDebugPlugin extends EBPlugin {
    /**
     *  The menu property for this plugin
     */
-   public final static String MENU = "tidedebug.menu";
+   //public final static String MENU = "tidedebug.menu";
+   public final static String MENU = "plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.menu";
 
 
    /**
@@ -73,6 +74,7 @@ public class TideDebugPlugin extends EBPlugin {
        *  + "Try adding it to jEdit's jars/ folder.");
        *  }
        */
+      tideDebug = TideDebug.createTideDebug(this, Tide.getInstance());
    }
 
 

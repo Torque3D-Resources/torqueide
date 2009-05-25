@@ -3,6 +3,8 @@
 #
 # :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
 #
+# dynamic loading
+plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.activate=startup
 
 
 #
@@ -26,8 +28,11 @@ plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.depend.2=plugin com.gara
 #	tidedebug-start tidedebug-pause tidedebug-stop \
 #	- tidedebug-step-into tidedebug-step-over  tidedebug-run-to-cursor tidedebug-step-out \
 #	- tidedebug-toggle-breakpoint tidedebug-add-watch tidedebug-remove-watch
+#plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.menu = tidedebug-about tidedebug-recompile
+#plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.menu.label=TideDebug
 tidedebug.menu = tidedebug-about tidedebug-recompile
 tidedebug.menu.label=TideDebug
+
 
 #
 # Debugger toolbar:
