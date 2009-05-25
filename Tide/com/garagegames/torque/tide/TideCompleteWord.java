@@ -152,10 +152,11 @@ public class TideCompleteWord extends JWindow {
              *
              *@return    The managingFocus value
              */
+        	 /*
             public boolean isManagingFocus() {
                return false;
             }
-
+        	*/
 
             /**
              *  Makes the tab key work in Java 1.4.
@@ -193,7 +194,8 @@ public class TideCompleteWord extends JWindow {
 
       pack();
       setLocation(location);
-      show();
+      //show();
+      setVisible(true);
 
       KeyHandler keyHandler = new KeyHandler();
       addKeyListener(keyHandler);

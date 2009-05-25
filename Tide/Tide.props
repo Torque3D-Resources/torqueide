@@ -3,7 +3,8 @@
 #
 # :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
 #
-
+# dynamic loading
+plugin.com.garagegames.torque.tide.TidePlugin.activate=startup
 
 #
 # General plugin properties:
@@ -20,10 +21,10 @@ plugin.com.garagegames.torque.tide.TidePlugin.depend.1=plugin projectviewer.Proj
 # Tide menu:
 #
 
-tide.menu = tide-about tide-new
+plugin.com.garagegames.torque.tide.TidePlugin.menu = tide-about tide-new
 #tide-complete-word
-tide.menu.label=Tide
-
+plugin.com.garagegames.torque.tide.TidePlugin.menu.label=Tide
+plugin.com.garagegames.torque.tide.TidePlugin.menu.code=new com.garagegames.torque.tide.TideMenuProvider();
 #
 # Tide actions:
 #

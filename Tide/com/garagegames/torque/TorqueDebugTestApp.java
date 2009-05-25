@@ -83,7 +83,7 @@ public class TorqueDebugTestApp extends JApplet
       frame.getContentPane().add( BorderLayout.CENTER, applet );
       applet.init();
       frame.setSize( 750, 560);
-      frame.show();
+      frame.setVisible(true);
    }
 
    public void init()
