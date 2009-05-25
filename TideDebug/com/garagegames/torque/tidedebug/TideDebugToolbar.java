@@ -21,6 +21,7 @@
  */
 package com.garagegames.torque.tidedebug;
 
+import java.awt.Container;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -72,7 +73,8 @@ public class TideDebugToolbar extends JToolBar
       this.tideDebug = tideDebug;
 
       //JToolBar toolbar = GUIUtilities.loadToolBar("tidedebug.toolbar");
-      Box toolbar = GUIUtilities.loadToolBar("tidedebug.toolbar");
+      //Box toolbar = GUIUtilities.loadToolBar("tidedebug.toolbar");
+      JPanel toolbar = (JPanel)GUIUtilities.loadToolBar("tidedebug.toolbar");
 
       /*
        *  start = (JButton) toolbar.getComponentAtIndex(0);
@@ -87,16 +89,16 @@ public class TideDebugToolbar extends JToolBar
        *  removeWatch = (JButton) toolbar.getComponentAtIndex(11);
        */
       try {
-         start = (JButton) toolbar.getComponent(0);
-         pause = (JButton) toolbar.getComponent(1);
-         stop = (JButton) toolbar.getComponent(2);
-         stepInto = (JButton) toolbar.getComponent(4);
-         stepOver = (JButton) toolbar.getComponent(5);
-         runToCursor = (JButton) toolbar.getComponent(6);
-         stepOut = (JButton) toolbar.getComponent(7);
-         toggleBreakpoint = (JButton) toolbar.getComponent(9);
-         addWatch = (JButton) toolbar.getComponent(10);
-         removeWatch = (JButton) toolbar.getComponent(11);
+         start = (JButton) ((JToolBar)toolbar.getComponent(0)).getComponent(0);
+         pause = (JButton) ((JToolBar)toolbar.getComponent(0)).getComponent(1);
+         stop = (JButton) ((JToolBar)toolbar.getComponent(0)).getComponent(2);
+         stepInto = (JButton) ((JToolBar)toolbar.getComponent(0)).getComponent(4);
+         stepOver = (JButton) ((JToolBar)toolbar.getComponent(0)).getComponent(5);
+         runToCursor = (JButton) ((JToolBar)toolbar.getComponent(0)).getComponent(6);
+         stepOut = (JButton) ((JToolBar)toolbar.getComponent(0)).getComponent(7);
+         toggleBreakpoint = (JButton) ((JToolBar)toolbar.getComponent(0)).getComponent(9);
+         addWatch = (JButton) ((JToolBar)toolbar.getComponent(0)).getComponent(10);
+         removeWatch = (JButton) ((JToolBar)toolbar.getComponent(0)).getComponent(11);
       } catch (Exception ex) {
          System.err.println("Error getting components in TIDEDebug Toolbar: " + ex.getMessage());
          ex.printStackTrace();

@@ -317,7 +317,8 @@ public class TideCompleteWord extends JWindow {
       ProjectManager pm = ProjectManager.getInstance();
       ProjectViewer viewer = ProjectViewer.getViewer(views);
       // get current project
-      VPTProject currProject = PVActions.getCurrentProject(views);
+      //VPTProject currProject = PVActions.getCurrentProject(views);
+      VPTProject currProject = ProjectViewer.getActiveProject(views);
       // now get the current projects' root dir...
       String rootDir = currProject.getRootPath();
       // check if this is a TIDE project first:
@@ -345,7 +346,7 @@ public class TideCompleteWord extends JWindow {
             Log.log(Log.DEBUG, views, "Keyword file not found: " + keywordFile);
             //JOptionPane.showMessageDialog(views,"No keyword file found, creating it!");
 
-            for(Iterator i = currProject.getFiles().iterator(); i.hasNext(); ) {
+            for(Iterator i = currProject.getOpenableNodes().iterator(); i.hasNext(); ) {
                //currProject.getOpenableNodes().iterator(); i.hasNext(); )
 
                VPTNode n = (VPTNode) i.next();

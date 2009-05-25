@@ -29,6 +29,7 @@ import javax.swing.*;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.*;
 
 import com.garagegames.torque.tide.*;
@@ -85,8 +86,9 @@ public class BreakpointHighlight extends TextAreaExtension
     */
    public void paintValidLine(Graphics2D gfx, int screenLine,
          int physicalLine, int start, int end, int y) {
-      Buffer buffer = textArea.getBuffer();
-      if (!buffer.isLoaded()) {
+	   //Buffer buffer = textArea.getBuffer();
+	   Buffer buffer = textArea.getView().getBuffer();
+	   if (!buffer.isLoaded()) {
          return;
       }
 

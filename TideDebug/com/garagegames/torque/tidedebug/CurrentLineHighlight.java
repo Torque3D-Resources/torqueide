@@ -83,7 +83,7 @@ public class CurrentLineHighlight extends TextAreaExtension implements
     */
    public void paintValidLine(Graphics2D gfx, int screenLine,
          int physicalLine, int start, int end, int y) {
-      Buffer buffer = textArea.getBuffer();
+      Buffer buffer = textArea.getView().getBuffer();
 
       // CRITICAL: do only as much tests as neccessary, otherwise it
       // would slow down cursor movement

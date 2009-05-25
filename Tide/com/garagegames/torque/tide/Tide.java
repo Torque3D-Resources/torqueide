@@ -848,7 +848,7 @@ public class Tide
       }
 
       //Project project = viewer.getCurrentProject();
-      VPTProject project = PVActions.getCurrentProject(jEdit.getActiveView());
+      VPTProject project = ProjectViewer.getActiveProject(jEdit.getActiveView());
 
       // if we have not opened a project...try to read from
       // the top project viewer project
@@ -872,7 +872,8 @@ public class Tide
          // if the user has changed projects on us then
          // let's change it back to what WE think should be current
          //beffy: viewer.setCurrentProject( project );
-         viewer.setProject(project);
+         //viewer.setProject(project);
+    	  viewer.setRootNode(project);
       }
 
       return true;
@@ -987,14 +988,25 @@ public class Tide
        *  config.setImportExts(savedExts);
        */
       //beffy: new project
+      VPTGroup tmpGroup = (VPTGroup) ((viewer.getSelectedNode() == null) ? viewer.getRoot() : viewer.getSelectedNode());//;//new VPTGroup("All Projects");
       VPTProject tmpProject = new VPTProject(opt.projectName);
       tmpProject.setRootPath(opt.options.gamePath.getParent());
       currentProject = ProjectOptions.run(tmpProject);
       if(currentProject != null) {
-         ProjectManager.getInstance().addProject(currentProject);
+         ProjectManager.getInstance().addProject(currentProject, tmpGroup);
          RootImporter ipi = new RootImporter(currentProject, null, viewer, jEdit.getActiveView());
          ipi.doImport();
-         viewer.setProject(currentProject);
+         //viewer.setProject(currentProject);
+         viewer.setRootNode(currentProject);
+         try
+         {
+        	 ProjectManager.getInstance().saveProjectList();
+        	 //ProjectManager.getInstance().save();
+         }
+         catch(Exception ioex)
+         {
+        	 Log.log(Log.ERROR, this, ioex.getMessage());
+         }
       }
    }
 

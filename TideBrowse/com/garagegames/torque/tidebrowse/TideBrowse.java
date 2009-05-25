@@ -406,7 +406,7 @@ public class TideBrowse extends JPanel implements EBComponent {
       //ProjectViewer viewer = ProjectViewer.getInstance(view);
       ProjectViewer viewer = ProjectViewer.getViewer(view);
       // get current project
-      VPTProject currProject = PVActions.getCurrentProject(view);
+      VPTProject currProject = ProjectViewer.getActiveProject(view);//PVActions.getCurrentProject(view);
 
       // now get the current projects' root dir...
       String rootDir = currProject.getRootPath();
@@ -419,7 +419,7 @@ public class TideBrowse extends JPanel implements EBComponent {
       snr.setIgnoreCase(true);
 
       // use the global ProjectManager file types:
-      String importExts = ProjectViewerConfig.getInstance().getImportExts();
+      String importExts = ProjectViewerConfig.getInstance().getImportGlobs();//.getImportExts();
       String commaSep = importExts.replace(' ', ',');
       String fileSpec = "*.{" + commaSep + "}";
       if(regExp)
@@ -466,7 +466,8 @@ public class TideBrowse extends JPanel implements EBComponent {
       }
       // build regExp string to search for: function ... SELECTION ... (...)
       //currSelectionStr = "function" + currSelectionStr + "\\s*?" + "[[:punct:]].*[[:punct:]]";
-      currSelectionStr = "function" + "[\\s*?][a-z|0-9|:]*?" + currSelectionStr + "\\s*?" + "[[:punct:]].*[[:punct:]]";
+      //currSelectionStr = "function" + "[\\s*?][a-z|0-9|:]*?" + currSelectionStr + "\\s*?" + "[[:punct:]].*[[:punct:]]";
+      currSelectionStr = "function" + "[\\s*?][a-z|0-9|:]*?" + currSelectionStr + "\\s*?" + "\\(.*\\)";
       // e.g.:  [a-z|0-9]*[\s*|::]createPlayer\s*[[:punct:]].*[[:punct:]]
       Log.log(Log.DEBUG, view, "TideBrowse - Searching for: " + currSelectionStr);
       return submitSearch(view, currSelectionStr, true);

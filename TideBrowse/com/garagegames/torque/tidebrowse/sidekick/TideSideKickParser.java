@@ -14,6 +14,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 
 import projectviewer.*;
 
@@ -117,6 +118,36 @@ public final class TideSideKickParser
 
             public void projectAdded(ProjectViewerEvent evt) {
             }
+
+
+			public void groupActivated(ProjectViewerEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+
+			public void groupAdded(ProjectViewerEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+
+			public void groupRemoved(ProjectViewerEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+
+			public void nodeMoved(ProjectViewerEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+
+			public void nodeSelected(ProjectViewerEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
          }, jEdit.getActiveView());
    }
 
@@ -152,12 +183,15 @@ public final class TideSideKickParser
    private static void removeProjectCompletions() {
 
       View actView = jEdit.getActiveView();
-      VPTProject project = PVActions.getCurrentProject(actView);
+      VPTProject project = ProjectViewer.getActiveProject(actView);//PVActions.getCurrentProject(actView);
+      if(project == null)
+    	  return;
+      
       String projectRoot = project.getRootPath();
       File projectCompleteFile = new File(projectRoot,
             "project_autocomplete.txt");
 
-      if(projectCompleteFile.exists()) {
+      if(projectCompleteFile != null && projectCompleteFile.exists()) {
          Log.log(Log.DEBUG, TideSideKickParser.class,
                "*** Removing file: " + projectCompleteFile.getPath());
          projectCompleteFile.delete();
@@ -484,19 +518,22 @@ public final class TideSideKickParser
 
       ArrayList retList = new ArrayList();
       View actView = jEdit.getActiveView();
-      VPTProject project = PVActions.getCurrentProject(actView);
+      VPTProject project = ProjectViewer.getActiveProject(actView);//PVActions.getCurrentProject(actView);
+      if(project == null)
+    	  return retList;
+      
       String projectRoot = project.getRootPath();
       BufferedWriter out = null;
 
       // check if this is a TIDE project first:
       File tidePropsFile = new File(projectRoot, "TideProject.properties");
-      if(tidePropsFile.exists()) {
+      if(tidePropsFile != null && tidePropsFile.exists()) {
          try {
 
             File projectCompleteFile = new File(projectRoot,
                   "project_autocomplete.txt");
 
-            if(projectCompleteFile.exists()) {
+            if(projectCompleteFile != null && projectCompleteFile.exists()) {
                Log.log(Log.DEBUG, TideSideKickParser.class,
                      "***READING FILE: *** " +
                      projectCompleteFile.getPath());
@@ -505,7 +542,7 @@ public final class TideSideKickParser
             }
             else {
 
-               Collection projectFiles = project.getFiles();
+               Collection projectFiles = project.getOpenableNodes();//getFiles();
                Iterator fileIt = projectFiles.iterator();
                out = new BufferedWriter(new FileWriter(projectCompleteFile.getPath()));
 
@@ -712,7 +749,7 @@ public final class TideSideKickParser
          String word, Buffer currBuffer) {
 
       // build a list of unique words in all visible buffers
-      Set completions = new TreeSet(new MiscUtilities.StringCompare());
+      Set completions = new TreeSet(new StandardUtilities.StringCompare());
       Set buffers = new HashSet();
 
       for(int i = 0; i < currBuffers.length; i++) {
