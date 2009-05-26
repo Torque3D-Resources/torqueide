@@ -79,7 +79,7 @@ public class TidePlugin extends EBPlugin
             if (seen == null)
             {
                jEdit.setProperty(SeenTestInfoProperty,"true");
-               tide.displayAlphaTestingInfo(vmsg.getView());
+               Tide.displayAlphaTestingInfo(vmsg.getView());
             }
          }
       }
