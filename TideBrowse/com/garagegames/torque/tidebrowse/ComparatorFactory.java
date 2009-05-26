@@ -21,8 +21,8 @@
 package com.garagegames.torque.tidebrowse;
 
 
+import java.util.Comparator;
 import java.util.Hashtable;
-import org.gjt.sp.jedit.MiscUtilities;
 
 import com.garagegames.torque.tidebrowse.model.ModelType;
 
@@ -34,18 +34,18 @@ import com.garagegames.torque.tidebrowse.model.ModelType;
 **/
 public class ComparatorFactory
 {
-    private static MiscUtilities.Compare defaultComparator =
+    private static Comparator defaultComparator =
         new ModelTreeDefaultComparator();
-    private static MiscUtilities.Compare lineComparator =
+    private static Comparator lineComparator =
          new ModelTreeLineComparator();
 
 
-    public static MiscUtilities.Compare createModelTreeDefaultComparator() {
+    public static Comparator createModelTreeDefaultComparator() {
         return defaultComparator;
     }
 
 
-    public static MiscUtilities.Compare createModelTreeLineComparator() {
+    public static Comparator createModelTreeLineComparator() {
         return lineComparator;
     }
 
@@ -54,7 +54,7 @@ public class ComparatorFactory
      * Compares line numbers of two ModelTree nodes
     **/
     private static class ModelTreeLineComparator
-        implements MiscUtilities.Compare
+        implements Comparator
     {
         public int compare(Object o1,
                            Object o2)
@@ -77,7 +77,7 @@ public class ComparatorFactory
      * Compares names of two ModelTree nodes lexicographically
     **/
     private static class ModelTreeNameComparator
-        implements MiscUtilities.Compare
+        implements Comparator
     {
         public int compare(Object o1,
                            Object o2)
@@ -100,7 +100,7 @@ public class ComparatorFactory
      * </ol>
     **/
     private static class ModelTreeTypeComparator
-        implements MiscUtilities.Compare
+        implements Comparator
     {
         public int compare(Object o1,
                            Object o2)
@@ -143,7 +143,7 @@ public class ComparatorFactory
      * </ol>
     **/
     private static class ModelTreeDefaultComparator
-        implements MiscUtilities.Compare
+        implements Comparator
     {
         public int compare(Object o1,
                            Object o2)
@@ -152,9 +152,9 @@ public class ComparatorFactory
         }
 
 
-        private MiscUtilities.Compare cmp =
+        private Comparator cmp =
             new CompoundComparator(
-                new MiscUtilities.Compare[] {
+                new Comparator[] {
                      new ModelTreeTypeComparator()
                     ,new ModelTreeNameComparator()
                 }
@@ -166,15 +166,15 @@ public class ComparatorFactory
      * Comparator to build multi-criteria comparators
     **/
     private static class CompoundComparator
-        implements MiscUtilities.Compare
+        implements Comparator
     {
-        private MiscUtilities.Compare[] cmps = null;
+        private Comparator[] cmps = null;
 
 
         private CompoundComparator() {}
 
 
-        public CompoundComparator(MiscUtilities.Compare[] comparators) {
+        public CompoundComparator(Comparator[] comparators) {
             this.cmps = comparators;
         }
 

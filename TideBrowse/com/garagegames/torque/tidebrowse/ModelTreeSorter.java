@@ -21,6 +21,9 @@
 package com.garagegames.torque.tidebrowse;
 
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 import org.gjt.sp.jedit.MiscUtilities;
 
 
@@ -39,7 +42,7 @@ public class ModelTreeSorter
      *     <LI>The sorted nodes are put back into the tree
      * </OL>
     **/
-    public static void sort(ModelTree.Node n, MiscUtilities.Compare c)
+    public static void sort(ModelTree.Node n, Comparator c)
     {
         ModelTree.Node[] a = new ModelTree.Node[n.getChildCount()];
 
@@ -50,7 +53,8 @@ public class ModelTreeSorter
         n.removeAllChildren();
 
         /* JDK1.2: Arrays.sort() */
-        MiscUtilities.quicksort(a, c);
+        //MiscUtilities.quicksort(a, c);
+        Arrays.sort(a, c);
 
         for (int i = 0; i < a.length; i++) {
             n.add(a[i]);

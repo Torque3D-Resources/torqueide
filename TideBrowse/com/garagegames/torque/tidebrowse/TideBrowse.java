@@ -39,6 +39,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Comparator;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -415,8 +416,7 @@ public class TideBrowse extends JPanel implements EBComponent {
       Log.log(Log.DEBUG, view, "Current Project Root: " + rootDir);
 
       // instantiate SearchAndReplace...
-      SearchAndReplace snr = new SearchAndReplace();
-      snr.setIgnoreCase(true);
+      SearchAndReplace.setIgnoreCase(true);
 
       // use the global ProjectManager file types:
       String importExts = ProjectViewerConfig.getInstance().getImportGlobs();//.getImportExts();
@@ -425,15 +425,15 @@ public class TideBrowse extends JPanel implements EBComponent {
       if(regExp)
     	  fileSpec = "*.{cs,gui}";
       Log.log(Log.DEBUG, view, "File Spec: " + fileSpec);
-      snr.setSearchFileSet(new DirectoryListSet(rootDir, fileSpec, true));
+      SearchAndReplace.setSearchFileSet(new DirectoryListSet(rootDir, fileSpec, true));
 
       //snr.setSearchFileSet(new DirectoryListSet(rootDir, "*.{cs,gui,mis,dml,cc,h,cpp,c,asm}", true));
 
-      snr.setSearchString(searchStr);
-      snr.setBeanShellReplace(false);
-      snr.setRegexp(regExp);
+      SearchAndReplace.setSearchString(searchStr);
+      SearchAndReplace.setBeanShellReplace(false);
+      SearchAndReplace.setRegexp(regExp);
       // do the search...
-      boolean searchSuccess = snr.hyperSearch(view, false);
+      boolean searchSuccess = SearchAndReplace.hyperSearch(view, false);
       if(searchSuccess) {
          try {
             final HyperSearchResults results = (HyperSearchResults)
@@ -1092,7 +1092,7 @@ public class TideBrowse extends JPanel implements EBComponent {
       public void treeExpanded(TreeExpansionEvent evt) {
          Log.log(Log.DEBUG, this, "Tree Expanded");
 
-         org.gjt.sp.jedit.MiscUtilities.Compare compare;
+         Comparator compare;
          if(TideBrowse.this.options.getSort()) {
             compare = ComparatorFactory.createModelTreeDefaultComparator();
          }

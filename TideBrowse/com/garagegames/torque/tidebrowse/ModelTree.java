@@ -21,6 +21,7 @@
 package com.garagegames.torque.tidebrowse;
 
 
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -119,7 +120,7 @@ public class ModelTree extends JTree
         TreePath aPath = getPathForRow(0);
         Enumeration e  = getDescendantToggledPaths(aPath);
 
-        org.gjt.sp.jedit.MiscUtilities.Compare compare;
+        Comparator compare;
         if (options.getSort()) {
             compare = ComparatorFactory.createModelTreeDefaultComparator();
         } else {
