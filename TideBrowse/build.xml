@@ -62,6 +62,8 @@
             srcdir="${src.dir}"
             destdir="${build.dir}"
             deprecation="on"
+        	source="1.4"
+        	target="1.4"
             includeJavaRuntime="yes"
         >
             <classpath refid="project.class.path"/>

@@ -408,7 +408,11 @@ public class TideBrowse extends JPanel implements EBComponent {
       ProjectViewer viewer = ProjectViewer.getViewer(view);
       // get current project
       VPTProject currProject = ProjectViewer.getActiveProject(view);//PVActions.getCurrentProject(view);
-
+      if(currProject == null && ProjectViewer.getActiveNode(view) != null)
+    	  currProject = VPTNode.findProjectFor(ProjectViewer.getViewer(view).getSelectedNode());
+      if(currProject == null)
+    	  return false;
+      
       // now get the current projects' root dir...
       String rootDir = currProject.getRootPath();
 
@@ -421,6 +425,7 @@ public class TideBrowse extends JPanel implements EBComponent {
       // use the global ProjectManager file types:
       String importExts = ProjectViewerConfig.getInstance().getImportGlobs();//.getImportExts();
       String commaSep = importExts.replace(' ', ',');
+      commaSep = commaSep.replace("*.", "");
       String fileSpec = "*.{" + commaSep + "}";
       if(regExp)
     	  fileSpec = "*.{cs,gui}";

@@ -29,9 +29,6 @@ import java.io.*;
 
 //{{{ Imports
 import java.util.*;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
 import javax.swing.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
@@ -39,6 +36,7 @@ import org.gjt.sp.jedit.search.*;
 import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StandardUtilities;
 
 import projectviewer.*;
 import projectviewer.config.*;
@@ -300,7 +298,7 @@ public class TideCompleteWord extends JWindow {
    private static Completion[] getCompletions(Buffer buffer, String word,
          int caret) {
       // build a list of unique words in all visible buffers
-      Set completions = new TreeSet(new MiscUtilities.StringICaseCompare());
+      Set completions = new TreeSet(new StandardUtilities.StringCompare());
       Set buffers = new HashSet();
 
       // only complete current buffer's keyword map

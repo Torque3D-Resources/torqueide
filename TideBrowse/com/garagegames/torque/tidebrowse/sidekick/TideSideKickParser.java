@@ -121,8 +121,6 @@ public final class TideSideKickParser
 
 
 			public void groupActivated(ProjectViewerEvent arg0) {
-				// TODO Auto-generated method stub
-				
 			}
 
 
@@ -146,6 +144,14 @@ public final class TideSideKickParser
 
 			public void nodeSelected(ProjectViewerEvent arg0) {
 				// TODO Auto-generated method stub
+				if(arg0.getNode().isProject())
+				{
+	               Log.log(Log.DEBUG, TideSideKickParser.class,
+	               "+++++++ PROJECT NODE SELECTED, RELOADING AUTOCOMPLETIONS!");
+
+		             // reload completions
+		             buildCompletions();
+				}
 				
 			}
          }, jEdit.getActiveView());
@@ -184,6 +190,8 @@ public final class TideSideKickParser
 
       View actView = jEdit.getActiveView();
       VPTProject project = ProjectViewer.getActiveProject(actView);//PVActions.getCurrentProject(actView);
+      if(project == null && ProjectViewer.getActiveNode(actView) != null)
+    	  project = VPTNode.findProjectFor(ProjectViewer.getViewer(actView).getSelectedNode());
       if(project == null)
     	  return;
       
@@ -518,13 +526,32 @@ public final class TideSideKickParser
 
       ArrayList retList = new ArrayList();
       View actView = jEdit.getActiveView();
-      VPTProject project = ProjectViewer.getActiveProject(actView);//PVActions.getCurrentProject(actView);
+      VPTProject project = null;
+      try
+      {
+	      project = ProjectViewer.getActiveProject(actView);//PVActions.getCurrentProject(actView);
+	      if(project == null && ProjectViewer.getActiveNode(actView) != null)
+	    	  project = VPTNode.findProjectFor(ProjectViewer.getViewer(actView).getSelectedNode());
+      }
+      catch(Exception ex){
+          Log.log(Log.ERROR, TideSideKickParser.class,
+                  "***PROBLEM GETTING PROJECT: *** " +
+                  ex.getMessage());
+      }
       if(project == null)
     	  return retList;
+      
+      Log.log(Log.DEBUG, TideSideKickParser.class,
+              "***READING PROJECT: *** " +
+              project.getName());
       
       String projectRoot = project.getRootPath();
       BufferedWriter out = null;
 
+      Log.log(Log.DEBUG, TideSideKickParser.class,
+              "***PROJECT ROOT: *** " +
+              projectRoot);
+      
       // check if this is a TIDE project first:
       File tidePropsFile = new File(projectRoot, "TideProject.properties");
       if(tidePropsFile != null && tidePropsFile.exists()) {
