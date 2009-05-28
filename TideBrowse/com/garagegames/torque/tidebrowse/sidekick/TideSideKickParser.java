@@ -1,5 +1,6 @@
 package com.garagegames.torque.tidebrowse.sidekick;
 
+import com.garagegames.torque.tide.Tide;
 import com.garagegames.torque.tidebrowse.*;
 import com.garagegames.torque.tidebrowse.options.GeneralOptions;
 
@@ -144,7 +145,8 @@ public final class TideSideKickParser
 
 			public void nodeSelected(ProjectViewerEvent arg0) {
 				// TODO Auto-generated method stub
-				if(arg0.getNode().isProject())
+				//if(arg0.getNode().isProject())
+				if(Tide.hasProjectChanged())
 				{
 	               Log.log(Log.DEBUG, TideSideKickParser.class,
 	               "+++++++ PROJECT NODE SELECTED, RELOADING AUTOCOMPLETIONS!");
@@ -190,7 +192,7 @@ public final class TideSideKickParser
 
       View actView = jEdit.getActiveView();
       VPTProject project = ProjectViewer.getActiveProject(actView);//PVActions.getCurrentProject(actView);
-      if(project == null && ProjectViewer.getActiveNode(actView) != null)
+      if(project == null && ProjectViewer.getViewer(actView).getSelectedNode() != null)
     	  project = VPTNode.findProjectFor(ProjectViewer.getViewer(actView).getSelectedNode());
       if(project == null)
     	  return;
@@ -530,7 +532,7 @@ public final class TideSideKickParser
       try
       {
 	      project = ProjectViewer.getActiveProject(actView);//PVActions.getCurrentProject(actView);
-	      if(project == null && ProjectViewer.getActiveNode(actView) != null)
+	      if(project == null && ProjectViewer.getViewer(actView).getSelectedNode() != null)
 	    	  project = VPTNode.findProjectFor(ProjectViewer.getViewer(actView).getSelectedNode());
       }
       catch(Exception ex){

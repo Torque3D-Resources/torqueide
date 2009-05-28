@@ -92,7 +92,7 @@ public class Tide
    /**
     *  Description of the Field
     */
-   protected VPTProject currentProject;
+   protected static VPTProject currentProject;
 
    // these are the current project options (for now just torquedebug options)
    /**
@@ -831,7 +831,31 @@ public class Tide
       return bp;
    }
 
+   public static boolean hasProjectChanged() {
+      // is there a project viewer?
+      ProjectViewer viewer = ProjectViewer.getViewer(jEdit.getActiveView());
+      if(viewer == null) {
+         return false;
+      }
 
+      //Project project = viewer.getCurrentProject();
+      View actView = jEdit.getActiveView();
+      VPTProject project = ProjectViewer.getActiveProject(actView);
+      if(project == null && ProjectViewer.getViewer(actView).getSelectedNode() != null)
+    	  project = VPTNode.findProjectFor(ProjectViewer.getViewer(actView).getSelectedNode());
+
+      if(project == null)
+		  return false;
+
+      if(currentProject != project)
+      {
+    	  currentProject = project;
+    	  return true;
+      }
+	      
+      return false;
+   }
+   
    // update our concept of the current tide project
    // if necessary force the current tide project to be the current project
    // return true upon success
@@ -848,8 +872,31 @@ public class Tide
       }
 
       //Project project = viewer.getCurrentProject();
-      VPTProject project = ProjectViewer.getActiveProject(jEdit.getActiveView());
+      View actView = jEdit.getActiveView();
+      VPTProject project = ProjectViewer.getActiveProject(actView);
+      if(project == null && ProjectViewer.getViewer(actView).getSelectedNode() != null)
+    	  project = VPTNode.findProjectFor(ProjectViewer.getViewer(actView).getSelectedNode());
 
+      if(project == null)
+      {
+    	  if(currentProject == null)
+    	  {
+    		  JOptionPane.showMessageDialog(null,"Please select a project first!");
+    		  return false;
+    	  }
+      }
+      if(currentProject != project)
+      {
+    	  currentProject = project;
+      }
+
+      File projProps = new File(project.getRootPath(), "TideProject.properties");
+      if(!readProjectProperties(project, projProps)) {
+		  JOptionPane.showMessageDialog(null,"No TIDE project selected!");
+		  return false; // no TIDE project!
+      }
+      
+      /*
       // if we have not opened a project...try to read from
       // the top project viewer project
       if(currentProject == null) {
@@ -875,6 +922,7 @@ public class Tide
          //viewer.setProject(project);
     	  viewer.setRootNode(project);
       }
+      */
 
       return true;
    }

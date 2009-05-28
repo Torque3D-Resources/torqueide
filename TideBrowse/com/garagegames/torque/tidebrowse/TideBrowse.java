@@ -408,7 +408,7 @@ public class TideBrowse extends JPanel implements EBComponent {
       ProjectViewer viewer = ProjectViewer.getViewer(view);
       // get current project
       VPTProject currProject = ProjectViewer.getActiveProject(view);//PVActions.getCurrentProject(view);
-      if(currProject == null && ProjectViewer.getActiveNode(view) != null)
+      if(currProject == null && ProjectViewer.getViewer(view).getSelectedNode() != null)
     	  currProject = VPTNode.findProjectFor(ProjectViewer.getViewer(view).getSelectedNode());
       if(currProject == null)
     	  return false;
