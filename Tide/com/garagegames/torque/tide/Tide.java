@@ -138,6 +138,7 @@ public class Tide
     */
    protected String evaluateNowValue;
 
+   protected TideShell tideShell;
 
    // private constructor
    /**
@@ -147,6 +148,7 @@ public class Tide
     */
    private Tide(TidePlugin plugin) {
       this.tidePlugin = plugin;
+      this.tideShell = new TideShell();
    }
 
 
@@ -868,6 +870,7 @@ public class Tide
       // is there a project viewer?
       ProjectViewer viewer = ProjectViewer.getViewer(jEdit.getActiveView());
       if(viewer == null) {
+		 JOptionPane.showMessageDialog(null,"Please open the Project Manager and select a project first!");
          return false;
       }
 
@@ -1374,7 +1377,20 @@ public class Tide
       }
    }
 
-
+   /**
+    * Sends a console command to the engine
+    * @param cmd The full command including a ";"
+    */
+   public void sendConsoleCmd(String cmd) {
+      if(torqueDebug == null) {
+         return;
+      }
+      if(cmd != null && cmd.length() > 0 && cmd.endsWith(";")) {
+         // send the command to the engine
+         torqueDebug.rawCommand("CEVAL " + cmd);
+      }
+   }
+   
    // we have disconnected so we want to correctly setup the breakpoint
    // info by removing breakpoints not set by user and clearing all
    // 'illegal' flags from user-set breakpoints
@@ -1535,6 +1551,34 @@ public class Tide
     */
    public void callStack(String[] filestack, int[] numberstack,
          String[] functionstack) {
+	   StringBuffer retBuf = new StringBuffer();
+	   retBuf.append(" --------------------------------- \n");
+	   retBuf.append(" -------- START CALLSTACK -------- \n");
+	   retBuf.append(" --------------------------------- \n");
+	   retBuf.append(" -------- File list: \n");
+	   retBuf.append(" --------------------------------- \n");
+	   for(int i=0; i<filestack.length; i++)
+	   {
+		   retBuf.append(filestack[i] + "\n");
+	   }
+	   retBuf.append(" --------------------------------- \n");
+	   retBuf.append(" -------- File lines: \n");
+	   retBuf.append(" --------------------------------- \n");
+	   for(int i=0; i<numberstack.length; i++)
+	   {
+		   retBuf.append(numberstack[i] + "\n");
+	   }
+	   retBuf.append(" --------------------------------- \n");
+	   retBuf.append(" -------- Functions: \n");
+	   retBuf.append(" --------------------------------- \n");
+	   for(int i=0; i<functionstack.length; i++)
+	   {
+		   retBuf.append(functionstack[i] + "\n");
+	   }
+	   retBuf.append(" --------------------------------- \n");
+	   retBuf.append(" --------- END CALLSTACK --------- \n");
+	   retBuf.append(" --------------------------------- \n");
+	   Log.log(Log.DEBUG, this, retBuf.toString());
    }
 
 
@@ -1545,6 +1589,7 @@ public class Tide
     *@param  s  Description of the Parameter
     */
    public void consoleOutput(String s) {
+	   Log.log(Log.NOTICE, this, s);
    }
 
 

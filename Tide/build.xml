@@ -45,6 +45,7 @@
     <path id="project.class.path">
         <pathelement location="${install.dir}/jedit.jar"/>
         <pathelement location="${install.dir}/ProjectViewer.jar"/>
+        <pathelement location="${install.dir}/Console.jar"/>
         <pathelement location="${src.dir}"/>
     </path>
 
@@ -75,6 +76,7 @@
             <fileset dir="${build.dir}"/>
             <fileset dir="${src.dir}">
                 <include name="actions.xml"/>
+                <include name="services.xml"/>
                 <include name="dockables.xml"/>
                 <include name="**/*.props"/>
                 <include name="**/*.gif"/>
