@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+	<DOCKABLE NAME="tide-console-viewer" MOVABLE="TRUE">
+		new com.garagegames.torque.tidedebug.TideDebugConsoleViewer();
+	</DOCKABLE>
+	<DOCKABLE NAME="tide-callstack-viewer" MOVABLE="TRUE">
+		new com.garagegames.torque.tidedebug.TideDebugCallstackViewer();
+	</DOCKABLE>
+</DOCKABLES>

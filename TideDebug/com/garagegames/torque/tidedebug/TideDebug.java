@@ -61,6 +61,11 @@ public class TideDebug {
    private TideDebug(TideDebugPlugin plugin, Tide tide) {
       this.tideDebugPlugin = plugin;
       this.tide = tide;
+      
+      // our special log
+      int level = Log.WARNING;
+	  TideDebugLog.init(true,level);
+
    }
 
 

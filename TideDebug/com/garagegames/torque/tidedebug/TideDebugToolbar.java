@@ -100,7 +100,7 @@ public class TideDebugToolbar extends JToolBar
          addWatch = (JButton) ((JToolBar)toolbar.getComponent(0)).getComponent(10);
          removeWatch = (JButton) ((JToolBar)toolbar.getComponent(0)).getComponent(11);
       } catch (Exception ex) {
-         System.err.println("Error getting components in TIDEDebug Toolbar: " + ex.getMessage());
+    	 Log.log(Log.ERROR, this, "Error getting components in TIDEDebug Toolbar: " + ex.getMessage());
          ex.printStackTrace();
       }
 
@@ -115,7 +115,7 @@ public class TideDebugToolbar extends JToolBar
          stepOut.setIcon(new ImageIcon(getClass().getResource("/com/garagegames/torque/tidedebug/icons/TideStepOut24.gif")));
          runToCursor.setIcon(new ImageIcon(getClass().getResource("/com/garagegames/torque/tidedebug/icons/TideRunToCursor24.gif")));
       } catch (Exception ex) {
-         System.err.println("Error setting icons in TIDEDebug Toolbar: " + ex.getMessage());
+    	 Log.log(Log.ERROR, this, "Error setting icons in TIDEDebug Toolbar: " + ex.getMessage());
          ex.printStackTrace();
       }
 
@@ -148,7 +148,7 @@ public class TideDebugToolbar extends JToolBar
             tide.addTorqueStateListener(this);
          }
       } catch (Exception ex) {
-         System.err.println("Error in TIDEDebug Toolbar: " + ex.getMessage());
+    	  Log.log(Log.ERROR, this, "Error in TIDEDebug Toolbar: " + ex.getMessage());
          ex.printStackTrace();
       }
    }
@@ -160,7 +160,6 @@ public class TideDebugToolbar extends JToolBar
     *@param  state  Description of the Parameter
     */
    private void updateButtons(int state) {
-	   System.err.print("updateButtons: " + state);
       if (state == Tide.NOTCONNECTED) {
          start.setEnabled(true);
          pause.setEnabled(false);

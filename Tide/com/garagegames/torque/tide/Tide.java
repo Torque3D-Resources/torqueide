@@ -10,7 +10,12 @@
 package com.garagegames.torque.tide;
 
 import com.garagegames.torque.*;
+import com.garagegames.torque.tidedebug.TideDebugCallstackViewer;
+import com.garagegames.torque.tidedebug.CallstackEntryListModel;
+import com.garagegames.torque.tidedebug.TideDebugLog;
 
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -18,10 +23,20 @@ import java.util.zip.*;
 import javax.swing.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.buffer.BufferAdapter;
+import org.gjt.sp.jedit.buffer.BufferChangeListener;
+import org.gjt.sp.jedit.buffer.BufferListener;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.msg.PositionChanging;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.pluginmgr.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.Selection;
+import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.util.Log;
 
 import projectviewer.*;
@@ -40,7 +55,7 @@ import projectviewer.vpt.*;
  *@created    27. November 2006
  */
 public class Tide
-       implements TorqueDebugListener {
+       implements TorqueDebugListener, EBComponent {
    // state
    /**
     *  Description of the Field
@@ -137,8 +152,10 @@ public class Tide
     *  Description of the Field
     */
    protected String evaluateNowValue;
-
-   protected TideShell tideShell;
+   
+   private BufferChangeListener bufferListener;
+   private boolean addedBufferChangeHandler;
+   private int lineToScrollTo = 0;
 
    // private constructor
    /**
@@ -148,10 +165,16 @@ public class Tide
     */
    private Tide(TidePlugin plugin) {
       this.tidePlugin = plugin;
-      this.tideShell = new TideShell();
+      
+      this.bufferListener = new BufferChangeListener();
+      EditBus.addToBus(this);
    }
 
-
+   void dispose()
+   {
+	   EditBus.removeFromBus(this);
+   }
+   
    // create code has package level access...called from the plugin
    /**
     *  Description of the Method
@@ -995,7 +1018,7 @@ public class Tide
       }
       catch(Exception e) {
          //JOptionPane.showMessageDialog(null,"Error: " + e.getLocalizedMessage());
-         System.out.println("Error: " + e.getLocalizedMessage());
+    	 Log.log(Log.ERROR, this, "Error: " + e.getLocalizedMessage());
          return;
       }
 
@@ -1017,7 +1040,7 @@ public class Tide
 
       // now write our info into this file
       if(!writeProjectProperties(projProps, opt.options)) {
-         System.out.println("Error creating project properites file: " + projProps.getAbsolutePath());
+    	 Log.log(Log.ERROR, this, "Error creating project properites file: " + projProps.getAbsolutePath());
          return;
       }
 
@@ -1205,7 +1228,7 @@ public class Tide
     *@param  lineNumber  Description of the Parameter
     *@return             Description of the Return Value
     */
-   public boolean openAndScrollTo(String fileName, int lineNumber) {
+   public boolean openAndScrollTo(String fileName, final int lineNumber) {
       // is there a project viewer?
       /*
        *  ProjectViewer viewer = ProjectViewer.getViewer(jEdit.getActiveView());
@@ -1214,63 +1237,144 @@ public class Tide
        */
       // now update our concept of the current project
       if(refreshCurrentProject()) {
+    	  // TODO: fix scrolling!!!
+    	 this.lineToScrollTo = lineNumber;
          File tmpFile = new File(currentProject.getRootPath(), fileName);
+         View actView = jEdit.getActiveView();
+
+         // check if this buffer is already open
+         Buffer _buffer = jEdit.getBuffer(tmpFile.getPath());
+         if(_buffer != null)
+         {
+        	 actView.setBuffer(_buffer, false);
+        	 scrollTo(lineNumber);
+        	 return true;
+         }
+
          Buffer lastBuf = null;
-         lastBuf = jEdit.openFile(null, tmpFile.getPath());
+         lastBuf = jEdit.openFile(actView, tmpFile.getPath());
+         // Wait for the buffer to load
+         if(!lastBuf.isLoaded())
+        	 VFSManager.waitForRequests();
+         
          if(lastBuf != null) {
-            System.err.println("Scrolling to line: " + lineNumber + " in file: " + tmpFile.getPath());
             if(lineNumber > -1) {
-               EditPane ep = jEdit.getActiveView().getEditPane();
+               EditPane ep = actView.getEditPane();
                if(ep != null) {
-                  ep.setBuffer(lastBuf);
-                  return (scrollTo(lineNumber));
+            	  actView.setBuffer(lastBuf, false);
+            	  ep.setBuffer(lastBuf, true);
+            	  scrollTo(lineNumber);
+            	  /*
+            	  lastBuf.addBufferListener(new BufferListener(){
+
+					public void bufferLoaded(JEditBuffer buf) {
+						Log.log(Log.DEBUG, this, "Buffer loaded: " + buf.getLineText(1));
+					}
+
+					public void contentInserted(JEditBuffer arg0, int arg1,
+							int arg2, int arg3, int arg4) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					public void contentRemoved(JEditBuffer arg0, int arg1,
+							int arg2, int arg3, int arg4) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					public void foldHandlerChanged(JEditBuffer arg0) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					public void foldLevelChanged(JEditBuffer arg0, int arg1,
+							int arg2) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					public void preContentInserted(JEditBuffer arg0, int arg1,
+							int arg2, int arg3, int arg4) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					public void preContentRemoved(JEditBuffer arg0, int arg1,
+							int arg2, int arg3, int arg4) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					public void transactionComplete(JEditBuffer arg0) {
+						// TODO Auto-generated method stub
+						
+					}
+            	  });
+            	  */
                }
                else {
-                  System.out.println("No active EditPane!?");
+            	   Log.log(Log.ERROR, this, "No active EditPane!?");
+            	   return false;
                }
             }
          }
          else {
-            System.out.println("No active buffer!?");
+        	 Log.log(Log.ERROR, this, "No active buffer!?");
+        	 return false;
          }
       }
-
-      return false;
+      return true;
    }
 
 
-   // scroll to given line
+   public boolean scrollTo(int lineNumber) {
+	   return scrollTo(lineNumber, null);
+   }
    /**
     *  Description of the Method
     *
     *@param  lineNumber  Description of the Parameter
     *@return             Description of the Return Value
     */
-   public boolean scrollTo(int lineNumber) {
+   public boolean scrollTo(int lineNumber, Selection.Range selRange) {
       // is there a project viewer?
 
       ProjectViewer viewer = ProjectViewer.getViewer(jEdit.getActiveView());
       if(viewer == null) {
+     	 Log.log(Log.ERROR, this, "No project active?!");
          return false;
       }
 
-      JEditTextArea textArea = jEdit.getActiveView().getTextArea();
+      View actView = jEdit.getActiveView();
+      JEditTextArea textArea = actView.getTextArea();
       if(textArea != null) {
          int height = textArea.getLineCount();
 
-         System.out.println("Scrolling TextArea to: " + lineNumber + " height: " + height);
-         if(lineNumber < height) {
+         Buffer currBuf = actView.getBuffer();
+		 int charsToLine = currBuf.getLineStartOffset(lineNumber - 1);	
+         Log.log(Log.DEBUG, this, "Scrolling TextArea to: " + lineNumber + " height: " + height);
+         if(lineNumber < height) 
+         {
+        	if(selRange != null)
+        	{
+	        	textArea.setSelection(selRange);
+	            textArea.moveCaretPosition(selRange.getStart());
+        	}
+        	else
+        	{
+	            textArea.moveCaretPosition(charsToLine);
+        	}
             textArea.scrollTo(lineNumber, 0, true);
-            System.out.println("Successfully scrolled to: " + lineNumber);
+            Log.log(Log.DEBUG, this, "Successfully scrolled to: " + lineNumber);
             return true;
          }
       }
       else {
-         System.out.println("No active textarea!?");
+    	  Log.log(Log.ERROR, this, "No active textarea!?");
       }
       return false;
    }
-
 
    // evaluate a variable...result will be reported to evaluation listener
    /**
@@ -1422,7 +1526,7 @@ public class Tide
     */
    public void createFailed(Exception e) {
       // tell user to run game before running this app
-      System.out.println("Tide: TorqueDebug Create Error: " + e.getLocalizedMessage());
+	  Log.log(Log.ERROR, this, "Tide: TorqueDebug Create Error: " + e.getLocalizedMessage());
       String msg = "This error received connecting to Torque Debugger:\n\n" +
             "    " + e.getLocalizedMessage() + "\n";
       JOptionPane.showMessageDialog(null, msg);
@@ -1438,7 +1542,7 @@ public class Tide
     */
    public void error(Exception e) {
       // tell user to run game before running this app
-      System.out.println("Tide: TorqueDebug Error: " + e.getLocalizedMessage());
+	  Log.log(Log.ERROR, this, "Tide: TorqueDebug Error: " + e.getLocalizedMessage());
       String msg = "This error received from TorqueDebug:\n\n" +
             "    " + e.getLocalizedMessage() + "\n";
       JOptionPane.showMessageDialog(null, msg);
@@ -1551,34 +1655,16 @@ public class Tide
     */
    public void callStack(String[] filestack, int[] numberstack,
          String[] functionstack) {
-	   StringBuffer retBuf = new StringBuffer();
-	   retBuf.append(" --------------------------------- \n");
-	   retBuf.append(" -------- START CALLSTACK -------- \n");
-	   retBuf.append(" --------------------------------- \n");
-	   retBuf.append(" -------- File list: \n");
-	   retBuf.append(" --------------------------------- \n");
-	   for(int i=0; i<filestack.length; i++)
-	   {
-		   retBuf.append(filestack[i] + "\n");
-	   }
-	   retBuf.append(" --------------------------------- \n");
-	   retBuf.append(" -------- File lines: \n");
-	   retBuf.append(" --------------------------------- \n");
-	   for(int i=0; i<numberstack.length; i++)
-	   {
-		   retBuf.append(numberstack[i] + "\n");
-	   }
-	   retBuf.append(" --------------------------------- \n");
-	   retBuf.append(" -------- Functions: \n");
-	   retBuf.append(" --------------------------------- \n");
+	   
+	   //DockableWindowManager wm = jEdit.getActiveView().getDockableWindowManager();
+	   //TideDebugCallstackViewer callStackViewer = (TideDebugCallstackViewer)wm.getDockable("tide-callstack-viewer");
+	   CallstackEntryListModel listModel = (CallstackEntryListModel)TideDebugCallstackViewer.getCallstackEntryListModel();
+	   listModel.removeAll();
 	   for(int i=0; i<functionstack.length; i++)
 	   {
-		   retBuf.append(functionstack[i] + "\n");
+		   String path = "" + filestack[i];
+		   listModel.addElement(new TideDebugCallstackViewer.CallstackEntry(path, functionstack[i], numberstack[i]));
 	   }
-	   retBuf.append(" --------------------------------- \n");
-	   retBuf.append(" --------- END CALLSTACK --------- \n");
-	   retBuf.append(" --------------------------------- \n");
-	   Log.log(Log.DEBUG, this, retBuf.toString());
    }
 
 
@@ -1589,7 +1675,7 @@ public class Tide
     *@param  s  Description of the Parameter
     */
    public void consoleOutput(String s) {
-	   Log.log(Log.NOTICE, this, s);
+	   TideDebugLog.log(Log.NOTICE, this, s);
    }
 
 
@@ -1639,6 +1725,56 @@ public class Tide
 
       fireEvaluationReady(variable, value);
    }
+
+	private void handleBufferUpdate(BufferUpdate bmsg)
+	{
+		if (bmsg.getWhat() == BufferUpdate.LOADED) 
+		{
+			//scrollTo(this.lineToScrollTo);
+		}
+		
+	}
+	public void handleMessage(EBMessage msg) {
+		if(msg instanceof BufferUpdate)
+			handleBufferUpdate((BufferUpdate)msg);
+		
+	}
+
+	private void addBufferChangeListener(Buffer buffer)
+	{
+		if(!addedBufferChangeHandler)
+		{
+			buffer.addBufferListener(bufferListener = new BufferChangeListener());
+			addedBufferChangeHandler = true;
+		}
+	}
+	private void removeBufferChangeListener(Buffer buffer)
+	{
+		if(addedBufferChangeHandler)
+		{
+			buffer.removeBufferListener(bufferListener);
+			addedBufferChangeHandler = false;
+		}
+	}   
+	
+	class BufferChangeListener extends BufferAdapter {
+
+		@Override
+		public void bufferLoaded(JEditBuffer buffer) {
+			// TODO Auto-generated method stub
+			super.bufferLoaded(buffer);
+		}
+
+		public void contentInserted(JEditBuffer buffer, int startLine, int offset, int numLines, int length)
+		{
+		}
+
+		public void contentRemoved(JEditBuffer buffer, int startLine, int offset, int numLines, int length)
+		{
+		}
+		
+	
+	}   
 }
 
 

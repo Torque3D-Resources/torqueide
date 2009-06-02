@@ -1,8 +1,5 @@
 package com.garagegames.torque.tide;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 import console.Console;
 import console.Output;
 import console.Shell;
