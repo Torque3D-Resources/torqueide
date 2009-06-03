@@ -155,7 +155,6 @@ public class Tide
    
    private BufferChangeListener bufferListener;
    private boolean addedBufferChangeHandler;
-   private int lineToScrollTo = 0;
 
    // private constructor
    /**
@@ -166,13 +165,12 @@ public class Tide
    private Tide(TidePlugin plugin) {
       this.tidePlugin = plugin;
       
-      this.bufferListener = new BufferChangeListener();
-      EditBus.addToBus(this);
+      //EditBus.addToBus(this);
    }
 
    void dispose()
    {
-	   EditBus.removeFromBus(this);
+	   //EditBus.removeFromBus(this);
    }
    
    // create code has package level access...called from the plugin
@@ -1237,94 +1235,112 @@ public class Tide
        */
       // now update our concept of the current project
       if(refreshCurrentProject()) {
-    	  // TODO: fix scrolling!!!
-    	 this.lineToScrollTo = lineNumber;
-         File tmpFile = new File(currentProject.getRootPath(), fileName);
-         View actView = jEdit.getActiveView();
-
-         // check if this buffer is already open
-         Buffer _buffer = jEdit.getBuffer(tmpFile.getPath());
-         if(_buffer != null)
-         {
-        	 actView.setBuffer(_buffer, false);
-        	 scrollTo(lineNumber);
-        	 return true;
-         }
-
-         Buffer lastBuf = null;
-         lastBuf = jEdit.openFile(actView, tmpFile.getPath());
-         // Wait for the buffer to load
-         if(!lastBuf.isLoaded())
-        	 VFSManager.waitForRequests();
-         
-         if(lastBuf != null) {
-            if(lineNumber > -1) {
-               EditPane ep = actView.getEditPane();
-               if(ep != null) {
-            	  actView.setBuffer(lastBuf, false);
-            	  ep.setBuffer(lastBuf, true);
-            	  scrollTo(lineNumber);
-            	  /*
-            	  lastBuf.addBufferListener(new BufferListener(){
-
-					public void bufferLoaded(JEditBuffer buf) {
-						Log.log(Log.DEBUG, this, "Buffer loaded: " + buf.getLineText(1));
-					}
-
-					public void contentInserted(JEditBuffer arg0, int arg1,
-							int arg2, int arg3, int arg4) {
-						// TODO Auto-generated method stub
-						
-					}
-
-					public void contentRemoved(JEditBuffer arg0, int arg1,
-							int arg2, int arg3, int arg4) {
-						// TODO Auto-generated method stub
-						
-					}
-
-					public void foldHandlerChanged(JEditBuffer arg0) {
-						// TODO Auto-generated method stub
-						
-					}
-
-					public void foldLevelChanged(JEditBuffer arg0, int arg1,
-							int arg2) {
-						// TODO Auto-generated method stub
-						
-					}
-
-					public void preContentInserted(JEditBuffer arg0, int arg1,
-							int arg2, int arg3, int arg4) {
-						// TODO Auto-generated method stub
-						
-					}
-
-					public void preContentRemoved(JEditBuffer arg0, int arg1,
-							int arg2, int arg3, int arg4) {
-						// TODO Auto-generated method stub
-						
-					}
-
-					public void transactionComplete(JEditBuffer arg0) {
-						// TODO Auto-generated method stub
-						
-					}
-            	  });
-            	  */
-               }
-               else {
-            	   Log.log(Log.ERROR, this, "No active EditPane!?");
-            	   return false;
-               }
-            }
-         }
-         else {
-        	 Log.log(Log.ERROR, this, "No active buffer!?");
-        	 return false;
-         }
+     	 try
+    	 {
+	         File tmpFile = new File(currentProject.getRootPath(), fileName);
+	         Log.log(Log.DEBUG, this, "Trying to open: " + tmpFile.getPath());
+	         View actView = jEdit.getActiveView();
+	
+	         // check if this buffer is already open
+	         Buffer _buffer = jEdit.getBuffer(tmpFile.getPath());
+	         if(_buffer != null)
+	         {
+	        	 if(actView.getBuffer() != _buffer)
+	        		 actView.setBuffer(_buffer, true);
+	             if(!_buffer.isLoaded())
+	            	 VFSManager.waitForRequests();
+	        	 scrollTo(lineNumber);
+	        	 return true;
+	         }
+	
+	         Buffer lastBuf = null;
+	         lastBuf = jEdit.openFile(actView, tmpFile.getPath());
+	         // Wait for the buffer to load
+	         if(!lastBuf.isLoaded())
+	        	 VFSManager.waitForRequests();
+	         
+	         if(lastBuf != null) {
+	            if(lineNumber > -1) {
+	               //EditPane ep = actView.getEditPane();
+	               if(true/*ep != null*/) {
+	            	  try
+	            	  {
+		            	  actView.setBuffer(lastBuf, false);
+		            	  //ep.setBuffer(lastBuf, true);
+		            	  scrollTo(lineNumber);
+		            	  return true;
+	            	  }
+	             	 catch(Exception ex)
+	            	 {
+	            		 ex.printStackTrace();
+	            	 }
+	            	  /*
+	            	  lastBuf.addBufferListener(new BufferListener(){
+	
+						public void bufferLoaded(JEditBuffer buf) {
+							Log.log(Log.DEBUG, this, "Buffer loaded: " + buf.getLineText(1));
+						}
+	
+						public void contentInserted(JEditBuffer arg0, int arg1,
+								int arg2, int arg3, int arg4) {
+							// TODO Auto-generated method stub
+							
+						}
+	
+						public void contentRemoved(JEditBuffer arg0, int arg1,
+								int arg2, int arg3, int arg4) {
+							// TODO Auto-generated method stub
+							
+						}
+	
+						public void foldHandlerChanged(JEditBuffer arg0) {
+							// TODO Auto-generated method stub
+							
+						}
+	
+						public void foldLevelChanged(JEditBuffer arg0, int arg1,
+								int arg2) {
+							// TODO Auto-generated method stub
+							
+						}
+	
+						public void preContentInserted(JEditBuffer arg0, int arg1,
+								int arg2, int arg3, int arg4) {
+							// TODO Auto-generated method stub
+							
+						}
+	
+						public void preContentRemoved(JEditBuffer arg0, int arg1,
+								int arg2, int arg3, int arg4) {
+							// TODO Auto-generated method stub
+							
+						}
+	
+						public void transactionComplete(JEditBuffer arg0) {
+							// TODO Auto-generated method stub
+							
+						}
+	            	  });
+	            	  */
+	               }
+	               else {
+	            	   Log.log(Log.ERROR, this, "No active EditPane!?");
+	            	   return false;
+	               }
+	            }
+	         }
+	         else {
+	        	 Log.log(Log.ERROR, this, "No active buffer!?");
+	        	 return false;
+	         }
+    	 }
+    	 catch(Exception ex)
+    	 {
+        	 Log.log(Log.ERROR, this, "Error while trying to open and scroll: " + ex.getMessage());
+    		 ex.printStackTrace();
+    	 }
       }
-      return true;
+      return false;
    }
 
 
@@ -1352,20 +1368,27 @@ public class Tide
          int height = textArea.getLineCount();
 
          Buffer currBuf = actView.getBuffer();
-		 int charsToLine = currBuf.getLineStartOffset(lineNumber - 1);	
-         Log.log(Log.DEBUG, this, "Scrolling TextArea to: " + lineNumber + " height: " + height);
+         if(!currBuf.isLoaded())
+         {
+        	 Log.log(Log.ERROR, this, "Buffer not loaded yet: " + currBuf.getPath());
+        	 return false;
+         }
+         
+		 int  charsToLine = currBuf.getLineStartOffset(lineNumber - 1);	
+         Log.log(Log.DEBUG, this, "Scrolling TextArea to: " + lineNumber + " height: " + height + " Setting caret to char pos: " + charsToLine);
          if(lineNumber < height) 
          {
         	if(selRange != null)
         	{
 	        	textArea.setSelection(selRange);
+	            textArea.scrollTo(lineNumber, 0, true);
 	            textArea.moveCaretPosition(selRange.getStart());
         	}
         	else
         	{
+	            textArea.scrollTo(lineNumber, 0, true);
 	            textArea.moveCaretPosition(charsToLine);
         	}
-            textArea.scrollTo(lineNumber, 0, true);
             Log.log(Log.DEBUG, this, "Successfully scrolled to: " + lineNumber);
             return true;
          }
@@ -1542,8 +1565,9 @@ public class Tide
     */
    public void error(Exception e) {
       // tell user to run game before running this app
-	  Log.log(Log.ERROR, this, "Tide: TorqueDebug Error: " + e.getLocalizedMessage());
-      String msg = "This error received from TorqueDebug:\n\n" +
+	  Log.log(Log.ERROR, this, "Tide: TorqueDebug Error: " + e.getLocalizedMessage() + "\nStacktrace: ");
+      e.printStackTrace();
+	  String msg = "This error received from TorqueDebug:\n\n" +
             "    " + e.getLocalizedMessage() + "\n";
       JOptionPane.showMessageDialog(null, msg);
    }

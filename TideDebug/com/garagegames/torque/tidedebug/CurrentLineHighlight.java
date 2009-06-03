@@ -85,7 +85,7 @@ public class CurrentLineHighlight extends TextAreaExtension implements
          int physicalLine, int start, int end, int y) {
       Buffer buffer = textArea.getView().getBuffer();
 
-      // CRITICAL: do only as much tests as neccessary, otherwise it
+      // CRITICAL: do only as much tests as necessary, otherwise it
       // would slow down cursor movement
       if (!buffer.isLoaded()) {
          return;
@@ -134,7 +134,8 @@ public class CurrentLineHighlight extends TextAreaExtension implements
     *  Description of the Method
     */
    private void redraw() {
-      /*
+
+	   /*
        *  FoldVisibilityManager foldVisibilityMgr = textArea.getFoldVisibilityManager();
        *  int physicalFirst = foldVisibilityMgr.getFirstVisibleLine();
        *  int physicalLast  = foldVisibilityMgr.getLastVisibleLine();
@@ -144,7 +145,12 @@ public class CurrentLineHighlight extends TextAreaExtension implements
       DisplayManager displayMgr = textArea.getDisplayManager();
       int physicalFirst = displayMgr.getFirstVisibleLine();
       int physicalLast = displayMgr.getLastVisibleLine();
-      textArea.invalidateLineRange(physicalFirst, physicalLast);
+      Log.log(Log.DEBUG, this, "physicalFirst: " + physicalFirst + " physicalLast: " + physicalLast);
+      try
+      {
+    	  textArea.invalidateLineRange(physicalFirst, physicalLast);
+      }
+      catch(Exception ex){}
    }
 
 
@@ -168,6 +174,7 @@ public class CurrentLineHighlight extends TextAreaExtension implements
     *@param  lineNumber  Description of the Parameter
     */
    public void lineChanged(String fileName, int lineNumber) {
+
       // remember current line and current filename
       currentLine = lineNumber;
       currentFilename = fileName;

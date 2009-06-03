@@ -63,6 +63,9 @@
             deprecation="on"
         	source="1.5"
         	target="1.5"
+        	debug="true"
+        	debuglevel="lines,var,source"
+        	optimize="true"
             includeJavaRuntime="yes"
         >
             <classpath refid="project.class.path"/>

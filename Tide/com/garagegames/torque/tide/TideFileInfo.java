@@ -10,6 +10,8 @@ import com.garagegames.torque.*;
 
 import java.util.*;
 
+import org.gjt.sp.util.Log;
+
 // NOTE: The class com.garagegames.toruqe.TorqueBreakPoint contains information
 //       from Torque about which lines in a file are 'breakable' and also which
 //       breakpoints are currently active.
@@ -134,6 +136,7 @@ public class TideFileInfo
       for (Iterator iter = breakList.iterator(); iter.hasNext(); )
       {
          TorqueBreakPoint bp = (TorqueBreakPoint)iter.next();
+         //Log.log(Log.DEBUG,this,"BP Line: " + bp.lineNumber);
 
          // see if if we have a breakpoint at this line
          TorqueBreakPoint ourBreak = getBreak(bp.key);
