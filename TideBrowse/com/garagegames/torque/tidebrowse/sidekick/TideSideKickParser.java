@@ -13,6 +13,7 @@ import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.EditBus.*;
 import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -582,10 +583,16 @@ public final class TideSideKickParser
 
                      VPTFile vptFile = (VPTFile) nextNode;
                      //File nextFile = vptFile.getFile();
-                     File nextFile = new File(vptFile.getFile().getPath());
 
-                     if(nextFile != null) {
+                     if(vptFile != null) {
+                    	 VFSFile vfsFile = vptFile.getFile();
+                    	 if(vfsFile.getPath() == null || !vfsFile.isReadable())
+                    		 continue;
+                    	 
+                        File nextFile = new File(vfsFile.getPath());
 
+                        //System.out.println("Reading file: " + vfsFile.getPath());
+                        
                         // parse file
                         String filePath = nextFile.getPath();
 
