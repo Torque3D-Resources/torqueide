@@ -5,13 +5,15 @@ import com.garagegames.torque.tidebrowse.*;
 import com.garagegames.torque.tidebrowse.options.GeneralOptions;
 
 import errorlist.DefaultErrorSource;
-import errorlist.ErrorSource;
 
 import java.io.*;
 
 import java.util.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.EditBus.*;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
@@ -30,7 +32,7 @@ import sidekick.*;
  *@created    27. November 2006
  */
 public final class TideSideKickParser
-       extends SideKickParser {
+       extends SideKickParser implements EBComponent{
 
    private final static String completionFileName = "autocomplete.txt";
    private final static ArrayList completionsList = new ArrayList();
@@ -70,35 +72,13 @@ public final class TideSideKickParser
       buildCompletions();
 
       // register event listeners for current project
+      EditBus.addToBus(this);
+      
       // TODO: REMOVE THEM WITH EVERY CHANGE!!!
       // hm, although this isnt that cool... so we have to re-generate the project completion file
       // with every file action... we do it manually from the menu for now instead! :)
 
-      /*
-       *  VPTProject project = PVActions.getCurrentProject(jEdit.getActiveView());
-       *  project.addProjectListener(new ProjectListener() {
-       *  public void fileAdded(ProjectEvent evt){
-       *  Log.log(Log.DEBUG, TideSideKickParser.class, "+++++++ FILE ADDED, RELOADING AUTOCOMPLETIONS!");
-       *  createProjectAutocomplete();
-       *  }
-       *  public void filesAdded(ProjectEvent evt){
-       *  Log.log(Log.DEBUG, TideSideKickParser.class, "+++++++ FILES ADDED, RELOADING AUTOCOMPLETIONS!");
-       *  createProjectAutocomplete();
-       *  }
-       *  public void fileRemoved(ProjectEvent evt){
-       *  Log.log(Log.DEBUG, TideSideKickParser.class, "+++++++ FILE REMOVED, RELOADING AUTOCOMPLETIONS!");
-       *  createProjectAutocomplete();
-       *  }
-       *  public void filesRemoved(ProjectEvent evt){
-       *  Log.log(Log.DEBUG, TideSideKickParser.class, "+++++++ FILES REMOVED, RELOADING AUTOCOMPLETIONS!");
-       *  createProjectAutocomplete();
-       *  }
-       *  public void propertiesChanged(ProjectEvent evt){
-       *  Log.log(Log.DEBUG, TideSideKickParser.class, "+++++++ PROPERTIES CHANGED, RELOADING AUTOCOMPLETIONS!");
-       *  createProjectAutocomplete();
-       *  }
-       *  });
-       */
+	  /*
       ProjectViewer.addProjectViewerListener(
          new ProjectViewerListener() {
             public void projectLoaded(ProjectViewerEvent evt) {
@@ -157,9 +137,28 @@ public final class TideSideKickParser
 				
 			}
          }, jEdit.getActiveView());
+         */
    }
 
 
+	/* Update for the current ProjectViewer plugin which now uses the JEdit EditBus system
+	 * to trigger events instead of the old custom event handlers
+	 * @see org.gjt.sp.jedit.EBComponent#handleMessage(org.gjt.sp.jedit.EBMessage)
+	 */
+	public void handleMessage(EBMessage message) {
+		// if a node in the project viewer was selected
+       if(message instanceof NodeSelectionUpdate) {
+    	   // only if project has changed (user has selected another project)
+			if(Tide.hasProjectChanged())
+			{
+              Log.log(Log.DEBUG, TideSideKickParser.class,
+              "+++++++ NODESELECTIONUPDATE, RELOADING AUTOCOMPLETIONS!");
+	             // reload completions
+	             buildCompletions();
+			}
+       }
+	}
+   
    /**
     *  Static function to re-generate the project autocompletion
     */
@@ -582,7 +581,8 @@ public final class TideSideKickParser
                   if(nextNode != null && nextNode.isFile()) {
 
                      VPTFile vptFile = (VPTFile) nextNode;
-                     File nextFile = vptFile.getFile();
+                     //File nextFile = vptFile.getFile();
+                     File nextFile = new File(vptFile.getFile().getPath());
 
                      if(nextFile != null) {
 
@@ -999,5 +999,6 @@ public final class TideSideKickParser
          }
       }
    }
+
 }
 

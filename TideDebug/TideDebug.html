@@ -2,7 +2,7 @@
 <head>
    <title>TideDebug Plugin</title>
     <!-- Tide - 
-         (c) 2002 - 2009 Paul Dana and Stefan "Beffy" Moises
+         (c) 2002 - 2010 Paul Dana and Stefan "Beffy" Moises
     -->
 </head>
 
@@ -20,7 +20,7 @@
     <tr width="100%">
         <td valign="TOP"><strong><font size="+2">TideDebug</font></strong></td>
         <td valign="TOP" align="RIGHT"><font size="-1">
-        <strong>Version 1.2.0 (May 27, 2009)</strong>
+        <strong>Version 1.3.1 (Feb 09, 2010)</strong>
         <br>By Paul Dana and Stefan "Beffy" Moises
         </font></td>
     </tr>
@@ -54,9 +54,9 @@ This version requires:
 </p>
 
 <ul>
-    <li>JDK >= 1.3</li>
-    <li>jEdit >= 4.1.x</li>
-    <li>"ProjectViewer" plugin >= 2.0.2 (for "Search current selection in project" function)</li>
+    <li>JDK >= 1.4</li>
+    <li>jEdit >= 4.3.x</li>
+    <li>"ProjectViewer" plugin >= 2.9.3</li>
 </ul>
 
 <table
@@ -81,33 +81,21 @@ This version requires:
 		if you want to use the debugger - that's because you have to specifiy your debug parameters which are saved to a
 		TIDE properties file.
 		<br>
-		TIDE will then also ask you to let it patch your "main.cs" file because it needs to make some changes to enable debugging
-		(add command line parameters and a few functions) to that file (it will make a backup of the file first, of course :-)
-		it is called "<b>main_prePatch.cs</b>").
-		<br>
-		<b>NOTE:</b> <i>If your main.cs file is heavily modified TIDE may encounter problems patching it</i>...
-		in that case you´d have to patch a "standard" main.cs (I´ve tested with the Torque HEAD version) and diff your own version manually
-		(I will also put a correctly patched main.cs into the download - you can look for the comments in there:
-		<br>// TorqueDebugPatcher begin
-		<br>... 
-		<br>// TorqueDebugPatcher end
-		<br>).
-		<br><i>Tribes</i> scripters will have to edit the file manually, too! (haven't tested it, but
-		the patching will definately not work there).</p>
+		TIDE will modify your "main.cs" file whenever you launch a debugging session because it needs to make some changes to enable debugging,
+		it will add the script command "dbgSetParameters(...)" at the top of the file and remove it after the debug session has ended.
+		</p>
 		
-		
-		<p><b>Here is a quick how-to by Paul Dana:</b></p>
+		<p><b>Here is a quick how-to:</b></p>
 		
 		<p>Choose "<b>New Project...</b>" under the TIDE plugin menu to create a new project for
 		testing. You must specify the game executable. TIDE is capable of launching
 		your game and automatically connecting to the Torque built-in telnet debugger.
-		However...to pull this off TIDE must patch your game script to allow for
-		command line options to automatically enable debug mode, set debug port and
-		password, etc. You will be prompted before your game scripts will be patched.</p>
+		However... to pull this off TIDE must patch your game script to allow for
+		a debug connection whenever a debug session is started. Your original "main.cs" will be saved as "main_prePatch.cs" and
+		the added code in "main.cs" will be removed after debugging ends, too.</p>
 		
 		<p>In this version you can set breakpoints at any time as long as the project
-		contains that file. In the previous version of TIDE you could only set
-		breakpoints after you paused execution. Now you can set breakpoints first
+		contains that file, you can set breakpoints first
 		and hit the "run" button and the breakpoints will be set automatically. Any
 		breakpoints you set will cause the program to pause exeuction when they
 		are reached.</p>
@@ -127,8 +115,8 @@ This version requires:
 		icon on the <b>TideDebug</b> toolbar. It looks like a stopsign. A little red stop
 		sign icon will appear in the gutter next to that line instead of a green dot.</p>
 		
-		<p><i>Do not edit any files either while in pause mode or while the game is
-		running.</i> This is not handled in this version.</p>
+		<p>If you edit a file either while in pause mode or while the game is
+        running, use <i>"Plugins -> Tide -> TideDebug -> Recompile Buffer..."</i> to reload the file.</p>
 
 <p>
 If you have any feature requests, comments, or if you would like to

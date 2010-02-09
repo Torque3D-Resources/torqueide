@@ -966,7 +966,8 @@ public class Tide
       }
 
       // otherwise we make one!
-      viewer = new ProjectViewer(view);
+      //viewer = new ProjectViewer(view);
+      viewer = null;
       return viewer;
    }
 
@@ -983,6 +984,7 @@ public class Tide
       // is there a project viewer?
       ProjectViewer viewer = getProjectViewerInstance(aView);
       if(viewer == null) {
+    	  JOptionPane.showMessageDialog(null,"Info: Please open the project viewer first!");
          return;
       }
       Tide.instance.newProject(viewer);
@@ -1060,20 +1062,37 @@ public class Tide
        *  config.setImportExts(savedExts);
        */
       //beffy: new project
+      // test if a valid folder is selected
+      // TODO: there seems to be a problem when the project viewer is visible when creating a new project,
+      // JEdit just "hangs" then!?
+      try
+      {
+    	  VPTGroup testGroup = (VPTGroup) viewer.getSelectedNode();    	  
+      }
+      catch(Exception ex)
+      {
+    	  JOptionPane.showMessageDialog(null,"Error: Please select a valid project root folder!");
+    	  return;
+      }
       VPTGroup tmpGroup = (VPTGroup) ((viewer.getSelectedNode() == null) ? viewer.getRoot() : viewer.getSelectedNode());//;//new VPTGroup("All Projects");
       VPTProject tmpProject = new VPTProject(opt.projectName);
       tmpProject.setRootPath(opt.options.gamePath.getParent());
-      currentProject = ProjectOptions.run(tmpProject);
+      //currentProject = ProjectOptions.run(tmpProject);
+      currentProject = ProjectOptions.run(tmpProject, true, tmpGroup);
       if(currentProject != null) {
          ProjectManager.getInstance().addProject(currentProject, tmpGroup);
-         RootImporter ipi = new RootImporter(currentProject, null, viewer, jEdit.getActiveView());
-         ipi.doImport();
-         //viewer.setProject(currentProject);
-         viewer.setRootNode(currentProject);
          try
          {
-        	 ProjectManager.getInstance().saveProjectList();
-        	 //ProjectManager.getInstance().save();
+             RootImporter ipi = new RootImporter(currentProject, null, viewer, jEdit.getActiveView());
+             //RootImporter ipi = new RootImporter(currentProject, null, viewer, viewer);
+             if(ipi != null)
+            	 ipi.doImport();
+             //currentProject.firePropertiesChanged();
+             
+             //viewer.setRootNode(currentProject);
+             ProjectViewer.setActiveNode(jEdit.getActiveView(), currentProject);
+             
+        	 //ProjectManager.getInstance().saveProjectList();
          }
          catch(Exception ioex)
          {

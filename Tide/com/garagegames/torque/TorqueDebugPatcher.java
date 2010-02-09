@@ -205,6 +205,11 @@ public class TorqueDebugPatcher
    public boolean hasDebugOptions()
    throws Exception
    {
+	   // beffy: tmp test - do not patch anything here, just add a line on startup 
+	   // @see TorqueDebug.java, launchGame()!
+	   checkedForDebugOptions = true;
+	   debugOptionsFound = true;
+	   
       if (checkedForDebugOptions)
          return debugOptionsFound;
 
@@ -259,7 +264,7 @@ public class TorqueDebugPatcher
    // provided as a failsafe incase for some reason we cannot
    // get to the file as a resource. In this case the file be searched for
    // explicitly in the parent folder of the given .jar file
-   private BufferedReader getBufferedReader(String parent, String name, ZipFile jarFile)
+private BufferedReader getBufferedReader(String parent, String name, ZipFile jarFile)
    throws Exception
    {
       return getBufferedReader(parent + "/" + name, jarFile);
@@ -326,11 +331,11 @@ public class TorqueDebugPatcher
    }
 
    // return true if given string found in given file
-   public boolean foundInFile(File f, String s)
+   public static boolean foundInFile(File f, String s)
    throws Exception
    {
       BufferedReader br = new BufferedReader(new FileReader(f.getAbsolutePath()));
-
+      boolean found = false;
       // read lines until end of file
       for (;;)
       {
@@ -340,10 +345,13 @@ public class TorqueDebugPatcher
 
          // search for the substring in this line
          if (line.indexOf(s) >= 0)
-            return true;
+       	  found = true;
       }
 
+      br.close();
+      br = null;
+      
       // if we get to end then we did not find it in the entire file
-      return false;
+      return found;
    }
 }

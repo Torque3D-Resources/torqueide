@@ -11,6 +11,6 @@ this executable might be c:/torque/example/torqueDemo_DEBUG.exe.
 Choose New Project... under the Tide plugin menu to create a new project for
 testing. You must specify the game executable. Tide is capable of launching
 your game and automatically connecting to the Torque built-in telnet debugger.
-However...to pull this off Tide must patch your game script to allow for
+However...to pull this off Tide must temporarily patch your game script to allow for
 command line options to automatically enable debug mode, set debug port and
-password, etc. You will be prompted before your game scripts will be patched.
+password, etc. when the game is started.

@@ -123,7 +123,16 @@ public class TorqueDebug implements Runnable {
       if (options.launch)
       {
          // this will tell listener if we failed
-         worker.gameProcess = launchGame(listener, options);
+    	  
+         try {
+			worker.gameProcess = launchGame(listener, options);
+		} catch (TorqueDebugException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
          if (worker.gameProcess == null)
          {
             return null;
@@ -134,7 +143,6 @@ public class TorqueDebug implements Runnable {
       Thread t = new Thread(worker);
       t.start();
       worker.thread = t;
-
       // return the object reference now that we have launched game
       return worker;
    }
@@ -155,7 +163,60 @@ public class TorqueDebug implements Runnable {
       return worker;
    }
 
+   /*
+    * Java has a File.renameTo() bug so if renameTo() doesn't work on the client's JVM
+    * we delete the old file and write its contents to a new one
+    */
+    public static void renameFile(File old, File nu) throws Exception
+    {
+       try
+       {
+          byte[] buf = new byte[1024];
+          java.io.InputStream in = new FileInputStream(old);
+          java.io.OutputStream out = new FileOutputStream(nu);
+          int len;
+          while ((len = in.read(buf)) >= 0)
+          {
+             out.write(buf, 0, len);
+          }
+          in.close();
+          out.close();
+          buf = null;
 
+          // Delete the old file.
+          old.delete();
+       }
+       catch (IOException ioe)
+       {
+          throw new IOException("Couldn't rename file " + old.getName() + " to " + nu.getName());
+       }
+    }
+
+    // return true if given string found in given file
+    public static boolean foundInFile(File f, String s)
+    throws Exception
+    {
+       BufferedReader br = new BufferedReader(new FileReader(f.getAbsolutePath()));
+       boolean found = false;
+       // read lines until end of file
+       for (;;)
+       {
+          String line = br.readLine();
+          if (line == null)
+             break;
+
+          // search for the substring in this line
+          if (line.indexOf(s) >= 0)
+        	  found = true;
+       }
+
+       br.close();
+       br = null;
+       
+       // if we get to end then we did not find it in the entire file
+       return found;
+    }
+    
    // launch the game locally
    /**
     *  Description of the Method
@@ -163,12 +224,101 @@ public class TorqueDebug implements Runnable {
     *@param  listener  Description of the Parameter
     *@param  options   Description of the Parameter
     *@return           Description of the Return Value
+    *@throws Exception 
     */
    public static Process launchGame(TorqueDebugListener listener,
-                                    TorqueDebugOptions options) {
+                                    TorqueDebugOptions options) throws Exception {
       Process gameProcess = null;
 
-      // launch it!
+      File mainCS = new File(options.gamePath.getParent(),"main.cs");
+      if (!foundInFile(mainCS,"dbgSetParameters"))
+      {
+	      // edit main.cs temporarily just like Torsion does :)
+	      String cmd = "// TIDE START\ndbgSetParameters(" + options.port + ", \"" + options.password + "\", false);\n// TIDE END";
+	      // we are going to write to a temporary file
+	      File newMainCS = new File(options.gamePath.getParent(),"TorqueDebugNewMainCS.txt");
+	      try {
+			PrintStream ps = new PrintStream(new BufferedOutputStream(new FileOutputStream(newMainCS)));
+			// we need to read from the main.cs file
+			BufferedReader br = new BufferedReader(new FileReader(mainCS.getAbsolutePath()));
+			// write our command at the beginning of the file
+			ps.println(cmd);
+			// read lines from original file and write lines to the new file
+			String line;
+			// read line from input
+			while ((line = br.readLine()) != null) { 
+				// write this line to output
+				ps.println(line);
+			}
+	
+			// cleanup
+			ps.close();
+			br.close();
+			ps = null;
+		    br = null;
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	
+	    // if we have one already
+	    File savedMainCS = new File(options.gamePath.getParent(),"main_prePatch.cs");
+	    if (savedMainCS.exists())
+	    {
+	       // if we can't delete this then rename to random name
+	       if (!savedMainCS.canWrite())
+	       {
+	          File tmpFile;
+	          for (int i=0;;i++)
+	          {
+	             tmpFile = new File(options.gamePath.getParent(),"main_prePatch"+i+".cs");
+	             if (!tmpFile.exists())
+	                break;
+	          }
+	          savedMainCS.renameTo(tmpFile);
+	       }
+	       else
+	       {
+	          savedMainCS.delete();
+	       }
+	    }
+	
+	    // now we gotta rename the original and copy in ours!
+	    if(!mainCS.renameTo(savedMainCS))
+	    {
+	       try
+	       {
+	          renameFile(mainCS, savedMainCS);
+	       }
+	       catch(Exception ex)
+	       {
+	          String renameMainError = "Patch Failed: error renaming main.cs to main_prePatch.cs\n";
+	          renameMainError += "Please rename the file 'main.cs' to 'main_prePatch.cs' manually!";
+	          renameMainError += "Message is:\n" + ex.getMessage();
+	          throw new TorqueDebugException(renameMainError);
+	       }
+	    }
+	
+	    // attempt to rename temp file to main.cs
+	    if (!newMainCS.renameTo(new File(options.gamePath.getParent(),"main.cs")))
+	    {
+	       try
+	       {
+	          renameFile(newMainCS, new File(options.gamePath.getParent(),"main.cs"));
+	       }
+	       catch(Exception ex)
+	       {
+	          String renameMainError = "Patch Failed: error renaming tempfile to main.cs\n";
+	          renameMainError += "Please rename the file 'TorqueDebugPatcherNewMainCS.txt' to 'main.cs' manually!";
+	          renameMainError += "Message is:\n" + ex.getMessage();
+	          throw new TorqueDebugException(renameMainError);
+	       }
+	    }
+      }	
+
+	  // launch it!
       String[] gameCommand = new String[6];
       gameCommand[0] = options.gamePath.getAbsolutePath();
       gameCommand[1] = "-dbgEnable";
@@ -199,7 +349,7 @@ public class TorqueDebug implements Runnable {
       // not the best we can do. Instead we just drop through at this point
       // and later on we allow the connect to fail for some number of seconds
       // before calling it a failure. The advantage to this is that the user
-      // does not have to wait any longer than nessessary.
+      // does not have to wait any longer than necessary.
 
       return gameProcess;
    }
@@ -365,7 +515,7 @@ public class TorqueDebug implements Runnable {
     */
    protected void onDestroy()
    throws Exception {
-      // we are shutting down so we can ignore any errrors from here on out
+      // we are shutting down so we can ignore any errors from here on out
       shuttingDown = true;
 
       if (initialized)
@@ -376,6 +526,99 @@ public class TorqueDebug implements Runnable {
          {
             gameProcess.destroy();
             gameProcess = null;
+
+            File mainCS = new File(options.gamePath.getParent(),"main.cs");
+            if (foundInFile(mainCS,"dbgSetParameters"))
+            {
+      	      // remove the added debugger line
+      	      String cmd = "// TIDE END";
+      	      // we are going to write to a temporary file
+      	      File newMainCS = new File(options.gamePath.getParent(),"TorqueDebugNewMainCS.txt");
+      	      try {
+      			PrintStream ps = new PrintStream(new BufferedOutputStream(new FileOutputStream(newMainCS)));
+      			// we need to read from the main.cs file
+      			BufferedReader br = new BufferedReader(new FileReader(mainCS.getAbsolutePath()));
+      			// read lines from original file and write lines to the new file
+      			String line;
+      			boolean startWriting = false;
+      			// read line from input
+      			while ((line = br.readLine()) != null) { 
+      				// write this line to output
+      				if(startWriting)
+      					ps.println(line);
+      				// start after the "// TIDE END" comment to remove the added lines now
+      				if(line.startsWith(cmd))
+      					startWriting = true;
+      			}
+      	
+      			// cleanup
+      			ps.close();
+      			br.close();
+      		    br = null;
+      			
+      		} catch (FileNotFoundException e) {
+      			e.printStackTrace();
+      		} catch (IOException e) {
+      			e.printStackTrace();
+      		}
+      	
+      	    // if we have one already
+      	    File savedMainCS = new File(options.gamePath.getParent(),"main_patched.cs");
+      	    if (savedMainCS.exists())
+      	    {
+      	       // if we can't delete this then rename to random name
+      	       if (!savedMainCS.canWrite())
+      	       {
+      	          File tmpFile;
+      	          for (int i=0;;i++)
+      	          {
+      	             tmpFile = new File(options.gamePath.getParent(),"main_patched"+i+".cs");
+      	             if (!tmpFile.exists())
+      	                break;
+      	          }
+      	          savedMainCS.renameTo(tmpFile);
+      	       }
+      	       else
+      	       {
+      	          savedMainCS.delete();
+      	       }
+      	    }
+      	
+      	    // now we gotta rename the original and copy in ours!
+      	    if(!mainCS.renameTo(savedMainCS))
+      	    {
+      	       try
+      	       {
+      	          renameFile(mainCS, savedMainCS);
+      	       }
+      	       catch(Exception ex)
+      	       {
+      	          String renameMainError = "Patch Failed: error renaming main.cs to main_patched.cs\n";
+      	          renameMainError += "Please rename the file 'main.cs' to 'main_patched.cs' manually!";
+      	          renameMainError += "Message is:\n" + ex.getMessage();
+      	          throw new TorqueDebugException(renameMainError);
+      	       }
+      	    }
+      	
+      	    // attempt to rename temp file to main.cs
+      	    if (!newMainCS.renameTo(new File(options.gamePath.getParent(),"main.cs")))
+      	    {
+      	       try
+      	       {
+      	          renameFile(newMainCS, new File(options.gamePath.getParent(),"main.cs"));
+      	       }
+      	       catch(Exception ex)
+      	       {
+      	          String renameMainError = "Patch Failed: error renaming tempfile to main.cs\n";
+      	          renameMainError += "Please rename the file 'TorqueDebugPatcherNewMainCS.txt' to 'main.cs' manually!";
+      	          renameMainError += "Message is:\n" + ex.getMessage();
+      	          throw new TorqueDebugException(renameMainError);
+      	       }
+      	    }
+           }	
+            
+            
+            
          }
          listener.preDestroy();
       }
@@ -619,7 +862,6 @@ public class TorqueDebug implements Runnable {
       {
          // first show it on console
          listener.consoleOutput(packetRestStr(" ", 1, clean_packet));
-
          // need to add 'compiling' code here
       }
       // breaklist................................................................

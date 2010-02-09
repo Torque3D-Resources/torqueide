@@ -41,6 +41,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Comparator;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
@@ -411,8 +412,10 @@ public class TideBrowse extends JPanel implements EBComponent {
       if(currProject == null && ProjectViewer.getViewer(view).getSelectedNode() != null)
     	  currProject = VPTNode.findProjectFor(ProjectViewer.getViewer(view).getSelectedNode());
       if(currProject == null)
+      {
+    	  JOptionPane.showMessageDialog(null,"Please select a project in the Project Viewer first!");
     	  return false;
-      
+      }      
       // now get the current projects' root dir...
       String rootDir = currProject.getRootPath();
 

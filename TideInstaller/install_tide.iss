@@ -1,6 +1,6 @@
 [Setup]
 AppName=TorqueIDE (TIDE)
-AppVerName=TorqueIDE 1.3
+AppVerName=TorqueIDE 1.3.1
 AppPublisher=beffy
 AppPublisherURL=http://torqueide.sourceforge.net
 AppSupportURL=http://torqueide.sourceforge.net/docs/faq.html
@@ -13,7 +13,7 @@ LicenseFile=D:\work_projects\_svn_kunden\torqueide\installer\gpl.txt
 InfoBeforeFile=D:\work_projects\_svn_kunden\torqueide\installer\infobefore.txt
 Compression=lzma
 SolidCompression=yes
-OutputBaseFilename=Tide1.3
+OutputBaseFilename=Tide1.3.1
 
 [Languages]
 Name: en; MessagesFile: compiler:Default.isl
@@ -25,20 +25,18 @@ de.BeveledLabel=Deutsch
 
 [Components]
 Name: main; Description: TorqueIDE Files; Types: full compact custom; Flags: fixed
-Name: jdk; Description: Java Runtime Environment 6 (JRE); Types: full compact custom
-Name: jedit; Description: JEdit; Types: full compact custom
+Name: jdk; Description: Java Runtime Environment 6u18 (JRE); Types: full compact custom
+Name: jedit; Description: JEdit 4.3.1; Types: full compact custom
 
 [Tasks]
 
 [Files]
-Source: jre-6u13-windows-i586-p.exe; DestDir: {app}; Flags: ignoreversion deleteafterinstall; Components: jdk
-Source: jedit4.3pre16install.exe; DestDir: {app}; Flags: ignoreversion deleteafterinstall; Components: jedit
+Source: jre-6u18-windows-i586.exe; DestDir: {app}; Flags: ignoreversion deleteafterinstall; Components: jdk
+Source: jedit4.3.1install.exe; DestDir: {app}; Flags: ignoreversion deleteafterinstall; Components: jedit
 ; TODO: copy config.properties in the CODE section AFTER jEdit was installed!
-Source: user\projectviewer\config.properties; DestDir: {app}\.jedit\projectviewer\; Flags: overwritereadonly ignoreversion touch replacesameversion
-Source: files\*.*; DestDir: {app}\jedit\modes\; Flags: ignoreversion touch
+Source: user\projectviewer\config.properties; DestDir: {app}\.jedit\plugins\projectviewer.ProjectPlugin\; Flags: overwritereadonly ignoreversion touch replacesameversion
 Source: jedit\*.*; DestDir: {app}\jedit; Flags: recursesubdirs ignoreversion overwritereadonly touch; Components: main
 ;Source: user\projectviewer\config.properties; DestDir: {code:GetUserHome}\.jedit\projectviewer\; Flags: overwritereadonly ignoreversion replacesameversion
-;Source: files\*.*; DestDir: {code:GetDataDir}\modes\; Flags: ignoreversion touch
 ;Source: jedit\*.*; DestDir: {code:GetDataDir}; Flags: recursesubdirs ignoreversion overwritereadonly touch; Components: main
 
 [INI]
@@ -51,8 +49,8 @@ Name: {group}\Tide FAQ; Filename: {app}\tide_faq.url
 Name: {group}\{cm:UninstallProgram,Tide}; Filename: {uninstallexe}
 
 [Run]
-Filename: {app}\jre-6u13-windows-i586-p; Description: Installing JRE; Components: jdk; StatusMsg: Installing JRE ...
-Filename: {app}\jedit4.3pre16install.exe; Description: Installing JEdit.; StatusMsg: Installing JEdit ...; Components: jedit
+Filename: {app}\jre-6u18-windows-i586.exe; Description: Installing JRE 6; Components: jdk; StatusMsg: Installing JRE ...
+Filename: {app}\jedit4.3.1install.exe; Description: Installing JEdit 4.3.1; StatusMsg: Installing JEdit ...; Components: jedit
 
 [UninstallDelete]
 Type: files; Name: {app}\tide.url
@@ -110,9 +108,17 @@ begin
   if FindFirst(FileSpec, FindRec) then begin
     try
       repeat
-        // Don't count directories
-        if FindRec.Attributes and FILE_ATTRIBUTE_DIRECTORY = 0 then
-          begin
+		{ RECURSIVE CALL - doesn't work yet
+        if FindRec.Attributes and FILE_ATTRIBUTE_DIRECTORY <> 0 then begin
+			if (CompareStr(FindRec.Name, '.') <> 0) and (CompareStr(FindRec.Name, '..') <> 0) then
+				begin
+					MsgBox('Copying ' + Source + FindRec.Name + '\' + ' to ' + Destination + FindRec.Name + '\' + ' directory. FileSpec is: ' + Source + FindRec.Name + '*', mbInformation, MB_OK);
+					FilesFound := FilesFound + CopyFiles(Source + FindRec.Name + '\', Destination + FindRec.Name + '\', Source + FindRec.Name + '\' + '*');
+				end;
+        end
+		}
+
+        if FindRec.Attributes and FILE_ATTRIBUTE_DIRECTORY = 0 then begin
 			  FilesFound := FilesFound + 1;
 			  Copied := FileCopy(Source + FindRec.Name, Destination + FindRec.Name, false);
 			  { MsgBox('Copying ' + Source + FindRec.Name + ' to ' + Destination + FindRec.Name + ' directory.', mbInformation, MB_OK); }
@@ -154,6 +160,11 @@ begin
 		    FileSpec := ExpandConstant('{app}\jedit\modes\*');
 		    Source := ExpandConstant('{app}\jedit\modes\');
 		    Destination := DataDirPage.Values[0] + '\modes\';
+			FilesCopied := FilesCopied + CopyFiles(Source, Destination, FileSpec);
+
+		    FileSpec := ExpandConstant('{app}\jedit\macros\Text\*');
+		    Source := ExpandConstant('{app}\jedit\macros\Text\');
+		    Destination := DataDirPage.Values[0] + '\macros\Text\';
 			FilesCopied := FilesCopied + CopyFiles(Source, Destination, FileSpec);
 
 		    FileSpec := ExpandConstant('{app}\.jedit\projectviewer\*');
