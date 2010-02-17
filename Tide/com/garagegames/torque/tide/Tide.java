@@ -909,17 +909,18 @@ public class Tide
     		  return false;
     	  }
       }
-      if(currentProject != project)
+      else
       {
-    	  currentProject = project;
-      }
-
-      File projProps = new File(project.getRootPath(), "TideProject.properties");
-      if(!readProjectProperties(project, projProps)) {
-		  JOptionPane.showMessageDialog(null,"No TIDE project selected!");
-		  return false; // no TIDE project!
-      }
-      
+	      File projProps = new File(project.getRootPath(), "TideProject.properties");
+	      if(!readProjectProperties(project, projProps)) {
+			  JOptionPane.showMessageDialog(null,"No TIDE project selected!");
+			  return false; // no TIDE project!
+	      }
+	      if(currentProject != project)
+	      {
+	    	  currentProject = project;
+	      }
+      }      
       /*
       // if we have not opened a project...try to read from
       // the top project viewer project
