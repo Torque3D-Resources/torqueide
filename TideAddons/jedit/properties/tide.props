@@ -1,0 +1,3 @@
+# overwrite the plugin info location to include TIDE plugins into the list
+plugin-manager.export-url=http://tork.beffy.de/jedit_pluginlist.php
+
