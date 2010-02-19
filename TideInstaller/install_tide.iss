@@ -1,6 +1,6 @@
 [Setup]
 AppName=TorqueIDE (TIDE)
-AppVerName=TorqueIDE 1.3.1
+AppVerName=TorqueIDE 1.3.2
 AppPublisher=beffy
 AppPublisherURL=http://torqueide.sourceforge.net
 AppSupportURL=http://torqueide.sourceforge.net/docs/faq.html
@@ -9,11 +9,11 @@ AppUpdatesURL=https://sourceforge.net/project/showfiles.php?group_id=97831
 DefaultDirName={pf}\Tide
 DefaultGroupName=Tide
 ;AllowNoIcons=yes
-LicenseFile=D:\work_projects\_svn_kunden\torqueide\installer\gpl.txt
-InfoBeforeFile=D:\work_projects\_svn_kunden\torqueide\installer\infobefore.txt
+LicenseFile=E:\work_projects\torqueide\installer\gpl.txt
+InfoBeforeFile=E:\work_projects\torqueide\installer\infobefore.txt
 Compression=lzma
 SolidCompression=yes
-OutputBaseFilename=Tide1.3.1
+OutputBaseFilename=Tide1.3.2
 
 [Languages]
 Name: en; MessagesFile: compiler:Default.isl
@@ -49,8 +49,8 @@ Name: {group}\Tide FAQ; Filename: {app}\tide_faq.url
 Name: {group}\{cm:UninstallProgram,Tide}; Filename: {uninstallexe}
 
 [Run]
-Filename: {app}\jre-6u18-windows-i586.exe; Description: Installing JRE 6; Components: jdk; StatusMsg: Installing JRE ...
-Filename: {app}\jedit4.3.1install.exe; Description: Installing JEdit 4.3.1; StatusMsg: Installing JEdit ...; Components: jedit
+Filename: {app}\jre-6u18-windows-i586.exe; Description: Installing JRE 6u18; Components: jdk; StatusMsg: Installing JRE 6 ...
+Filename: {app}\jedit4.3.1install.exe; Description: Installing JEdit 4.3.1; StatusMsg: Installing JEdit 4.3.1 ...; Components: jedit
 
 [UninstallDelete]
 Type: files; Name: {app}\tide.url
@@ -154,7 +154,8 @@ begin
 
 		    FileSpec := ExpandConstant('{app}\jedit\jars\*');
 		    Source := ExpandConstant('{app}\jedit\jars\');
-		    Destination := DataDirPage.Values[0] + '\jars\';
+		    { Destination := DataDirPage.Values[0] + '\jars\'; }
+		    Destination := UserHomeDir + '\.jedit\jars\';
 			FilesCopied := FilesCopied + CopyFiles(Source, Destination, FileSpec);
 
 		    FileSpec := ExpandConstant('{app}\jedit\modes\*');
@@ -169,7 +170,8 @@ begin
 
 		    FileSpec := ExpandConstant('{app}\.jedit\projectviewer\*');
 		    Source := ExpandConstant('{app}\.jedit\projectviewer\');
-		    Destination := UserHomeDir + '\.jedit\projectviewer\';
+		    {Destination := UserHomeDir + '\.jedit\projectviewer\';}
+		    Destination := UserHomeDir + '\.jedit\plugins\projectviewer.ProjectPlugin\';
 			{ MsgBox('UserHomeDir Destination: ' + Destination, mbInformation, MB_OK); }
 			FilesCopied := FilesCopied + CopyFiles(Source, Destination, FileSpec);
 
