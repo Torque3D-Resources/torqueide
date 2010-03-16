@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.AbstractListModel;
+import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+
+import org.gjt.sp.util.Log;
 
 public class CallstackEntryListModel extends AbstractListModel {
 
@@ -37,18 +40,47 @@ public class CallstackEntryListModel extends AbstractListModel {
 	} //}}}
 	
 	public Object getElementAt(int index) {
-		return callstackEntries.elementAt(index);
+		if(index < callstackEntries.size())
+			return callstackEntries.elementAt(index);
+		return null;
 	}
 	
 	public void addElement(TideDebugCallstackViewer.CallstackEntry entry)
 	{
 		callstackEntries.add(entry);
-		fireIntervalAdded(this, getSize(), getSize());
+		Log.log(Log.DEBUG, this, "Size of vector: " + getSize());
+		this.fireIntervalAdded(getSize(), getSize());
 	}
 
+	//{{{ fireIntervalAdded() method
+	private void fireIntervalAdded(int index1, int index2)
+	{
+		for(int i = 0; i < listeners.size(); i++)
+		{
+			ListDataListener listener = listeners.get(i);
+			listener.intervalAdded(new ListDataEvent(this,
+				ListDataEvent.INTERVAL_ADDED,
+				index1,index2));
+		}
+	} //}}}
+
+	//{{{ fireIntervalRemoved() method
+	private void fireIntervalRemoved(int index1, int index2)
+	{
+		for(int i = 0; i < listeners.size(); i++)
+		{
+			ListDataListener listener = listeners.get(i);
+			listener.intervalRemoved(new ListDataEvent(this,
+				ListDataEvent.INTERVAL_REMOVED,
+				index1,index2));
+		}
+	} //}}}
+	
+	
 	public void removeAll()
 	{
 		callstackEntries.clear();
+		this.fireIntervalRemoved(getSize(), getSize());
 	}
 	
 	public int getSize() {

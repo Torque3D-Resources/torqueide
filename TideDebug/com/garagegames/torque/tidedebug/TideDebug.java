@@ -222,7 +222,7 @@ public class TideDebug {
     *@param  view  Description of the Parameter
     */
    public static void toggleBreakpoint(View view) {
-      Log.log(Log.ERROR, null, "Toggle it!!!");
+      Log.log(Log.DEBUG, null, "Toggling breakpoint ...");
       Tide tide = Tide.getInstance();
       if (tide == null) {
          Log.log(Log.ERROR, null, "TIDE is null!!!");

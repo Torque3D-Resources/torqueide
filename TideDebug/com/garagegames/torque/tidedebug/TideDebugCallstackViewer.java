@@ -23,6 +23,7 @@ import com.garagegames.torque.tide.Tide;
 public class TideDebugCallstackViewer extends JPanel implements DefaultFocusComponent,
 EBComponent {
 
+	private ListHandler listHandler;
 	private final JList list;
 	private final JButton copy;
 	private final JCheckBox tail;
@@ -72,6 +73,7 @@ EBComponent {
 		list.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		list.setVisibleRowCount(Math.min(listModel.getSize(),4));
 		list.addListSelectionListener(new MyListListener());
+		listModel.addListDataListener(listHandler = new ListHandler());
 		
 		JScrollPane scroller = new JScrollPane(list,
 			JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
@@ -143,6 +145,22 @@ EBComponent {
 				}
 			});
 	} //}}}
+
+	public void addNotify()
+	{
+		super.addNotify();
+		if(tailIsOn)
+			scrollToTail();
+		EditBus.addToBus(this);
+	} //}}}
+
+	//{{{ removeNotify() method
+	@Override
+	public void removeNotify()
+	{
+		super.removeNotify();
+		EditBus.removeFromBus(this);
+	} //}}}
 	
 	//{{{ ActionHandler class
 	private class ActionHandler implements ActionListener
@@ -176,8 +194,14 @@ EBComponent {
 					ListModel model = list.getModel();
 					for(int i = 0; i < model.getSize(); i++)
 					{
-						buf.append(model.getElementAt(i));
-						buf.append('\n');
+						if(model.getElementAt(i) != null)
+						{
+							if(model.getElementAt(i) != null)
+							{
+								buf.append(model.getElementAt(i));
+								buf.append('\n');
+							}
+						}
 					}
 				}
 				Registers.setRegister('$',buf.toString());
@@ -189,7 +213,7 @@ EBComponent {
 	{
 		public void valueChanged(ListSelectionEvent event) 
 		{
-			if (!event.getValueIsAdjusting()) 
+			if (!event.getValueIsAdjusting() && list.getSelectedValue() != null) 
 			{
 				String selection = list.getSelectedValue().toString().trim();
 				// get path and line and open file at pos
@@ -205,7 +229,24 @@ EBComponent {
 			}
 		}
 	}
+	
+	private class ListHandler implements ListDataListener
+	{
+		public void intervalAdded(ListDataEvent e)
+		{
+			contentsChanged(e);
+		}
 
+		public void intervalRemoved(ListDataEvent e)
+		{
+			contentsChanged(e);
+		}
+
+		public void contentsChanged(ListDataEvent e)
+		{
+			scrollLaterIfRequired();
+		}
+	}
 	
    //{{{ ErrorEntry class
 	public static class CallstackEntry

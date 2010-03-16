@@ -679,7 +679,7 @@ public class Tide
       // i think this is implemented as a
       // 'clear when reached' breakpoint
       // we need to know about the currently open file and
-      // the carat position to do this
+      // the caret position to do this
    }
 
 
@@ -698,7 +698,6 @@ public class Tide
       }
 
       String s = name.replace('\\', '/').toLowerCase();
-      //String root = currentProject.getRoot().getPath();
       String root = currentProject.getRootPath();
       root = root.replace('\\', '/').toLowerCase();
       if(!s.startsWith(root)) {
@@ -729,6 +728,15 @@ public class Tide
       // get current file and line number
       Buffer buffer = view.getBuffer();
       String absName = buffer.getPath();
+      
+      // check if the file belongs to the currently active project
+      // if not we do not accept breakpoints!
+      if(!currentProject.isInProject(absName))
+      {
+    	  JOptionPane.showMessageDialog(null,"The selected file does not belong to the currently active project!");
+    	  return false;
+      }
+      
       //.getFile().getAbsolutePath();
       int lineNumber = view.getTextArea().getCaretLine() + 1;
 
@@ -772,8 +780,14 @@ public class Tide
          // if torque says this aint a valid line...then do nothing
          if(!torqueDebug.toggleBreakPoint(fileName, lineNumber)) {
             // make a 'ding' noise here?
+        	 //getToolkit().beep();
+       	  	JOptionPane.showMessageDialog(null,"No valid line.");
             return false;
          }
+      }
+      else
+      {
+    	  Log.log(Log.DEBUG, this, "Not connected yet, setting breakpoint without validation.");
       }
 
       // toggle OUR breakpoint (remember they are separate from TorqueDebug's breakpoint list
@@ -858,6 +872,7 @@ public class Tide
       // is there a project viewer?
       ProjectViewer viewer = ProjectViewer.getViewer(jEdit.getActiveView());
       if(viewer == null) {
+    	  JOptionPane.showMessageDialog(null,"Oops, no project viewer active!?");
          return false;
       }
 
@@ -889,14 +904,14 @@ public class Tide
     */
    public boolean refreshCurrentProject() {
       // is there a project viewer?
-      ProjectViewer viewer = ProjectViewer.getViewer(jEdit.getActiveView());
+      View actView = jEdit.getActiveView();
+      ProjectViewer viewer = ProjectViewer.getViewer(actView);
       if(viewer == null) {
 		 JOptionPane.showMessageDialog(null,"Please open the Project Manager and select a project first!");
          return false;
       }
 
       //Project project = viewer.getCurrentProject();
-      View actView = jEdit.getActiveView();
       VPTProject project = ProjectViewer.getActiveProject(actView);
       if(project == null && ProjectViewer.getViewer(actView).getSelectedNode() != null)
     	  project = VPTNode.findProjectFor(ProjectViewer.getViewer(actView).getSelectedNode());
@@ -1237,7 +1252,17 @@ public class Tide
       return true;
    }
 
-
+	private void scrollLaterIfRequired(final int lineNumber)
+	{
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				scrollTo(lineNumber);
+			}
+		});
+	}
+	
    // make sure given file is opened and that given line number is in view
    /**
     *  Description of the Method
@@ -1269,7 +1294,10 @@ public class Tide
 	        		 actView.setBuffer(_buffer, true);
 	             if(!_buffer.isLoaded())
 	            	 VFSManager.waitForRequests();
-	        	 scrollTo(lineNumber);
+	             
+	             //scrollLaterIfRequired(lineNumber);
+	             scrollTo(lineNumber);
+	             
 	        	 return true;
 	         }
 	
@@ -1287,6 +1315,7 @@ public class Tide
 	            	  {
 		            	  actView.setBuffer(lastBuf, false);
 		            	  //ep.setBuffer(lastBuf, true);
+		     	         // Wait for the buffer to load
 		            	  scrollTo(lineNumber);
 		            	  return true;
 	            	  }
@@ -1388,15 +1417,16 @@ public class Tide
          int height = textArea.getLineCount();
 
          Buffer currBuf = actView.getBuffer();
-         if(!currBuf.isLoaded())
+         if(currBuf == null || !currBuf.isLoaded())
          {
-        	 Log.log(Log.ERROR, this, "Buffer not loaded yet: " + currBuf.getPath());
+        	 Log.log(Log.ERROR, this, "Buffer is null or not loaded yet: " + currBuf.getPath());
         	 return false;
          }
+         int bufHeight = currBuf.getLineCount();
          
 		 int  charsToLine = currBuf.getLineStartOffset(lineNumber - 1);	
-         Log.log(Log.DEBUG, this, "Scrolling TextArea to: " + lineNumber + " height: " + height + " Setting caret to char pos: " + charsToLine);
-         if(lineNumber < height) 
+         Log.log(Log.DEBUG, this, "Scrolling TextArea to: " + lineNumber + " textarea height: " + height + " buffer height: " + bufHeight + " Setting caret to char pos: " + charsToLine);
+         if(lineNumber < bufHeight) 
          {
         	if(selRange != null)
         	{
@@ -1700,8 +1730,6 @@ public class Tide
    public void callStack(String[] filestack, int[] numberstack,
          String[] functionstack) {
 	   
-	   //DockableWindowManager wm = jEdit.getActiveView().getDockableWindowManager();
-	   //TideDebugCallstackViewer callStackViewer = (TideDebugCallstackViewer)wm.getDockable("tide-callstack-viewer");
 	   CallstackEntryListModel listModel = (CallstackEntryListModel)TideDebugCallstackViewer.getCallstackEntryListModel();
 	   listModel.removeAll();
 	   for(int i=0; i<functionstack.length; i++)

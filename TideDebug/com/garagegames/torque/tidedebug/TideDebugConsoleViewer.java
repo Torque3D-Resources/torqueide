@@ -214,8 +214,11 @@ EBComponent
 					ListModel model = list.getModel();
 					for(int i = 0; i < model.getSize(); i++)
 					{
-						buf.append(model.getElementAt(i));
-						buf.append('\n');
+						if(model.getElementAt(i) != null)
+						{
+							buf.append(model.getElementAt(i));
+							buf.append('\n');
+						}
 					}
 				}
 				Registers.setRegister('$',buf.toString());

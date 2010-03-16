@@ -13,11 +13,11 @@ plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.activate=startup
 
 plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.name=TideDebug
 plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.author=Paul Dana and Stefan Moises
-plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.version=1.3.2
+plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.version=1.3.3
 plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.docs=TideDebug.html
 plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.depend.0=jedit 04.03.04.00
 plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.depend.1=plugin projectviewer.ProjectPlugin 2.9.3
-plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.depend.2=plugin com.garagegames.torque.tide.TidePlugin 1.3.2
+plugin.com.garagegames.torque.tidedebug.TideDebugPlugin.depend.2=plugin com.garagegames.torque.tide.TidePlugin 1.3.3
 
 #
 # Debugger menu:
@@ -85,12 +85,14 @@ tidedebug.error.noSession.message=\
 	No debug session is currently running.
 
 # Console log viewer
+tide-console-viewer.label=Tide Console Viewer
 tide-console-viewer.title=Tide Console Viewer
 tide-console-viewer.caption=Tide Console Viewer shows the Torque console output.
 tide-console-viewer.copy=Copy
 tide-console-viewer.tail.label=Tail
 
 # Callstack viewer
+tide-callstack-viewer.label=Tide Callstack Viewer
 tide-callstack-viewer.title=Tide Callstack Viewer
 tide-callstack-viewer.caption=Tide Callstack Viewer shows the Telnet Debugger Callstack
 tide-callstack-viewer.copy=Copy

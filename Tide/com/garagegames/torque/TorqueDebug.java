@@ -73,7 +73,12 @@ public class TorqueDebug implements Runnable {
    }
 
 
-   // these create methods are the only way to get an instance of this class.
+   public TorqueDebug() {
+	// TODO Auto-generated constructor stub
+}
+
+
+// these create methods are the only way to get an instance of this class.
    // this method creates a new instance and runs it in it's own thread.
    /**
     *  Description of the Method
@@ -217,6 +222,17 @@ public class TorqueDebug implements Runnable {
        return found;
     }
     
+    /**
+     * Are we on MacOS?
+     * @return boolean MacOS or not
+     */
+    public static boolean isMacOs(){
+    	String lcOSName = System.getProperty("os.name").toLowerCase();
+    	if(lcOSName.startsWith("mac os"))
+    		return true;
+    	return false;
+    }
+    
    // launch the game locally
    /**
     *  Description of the Method
@@ -327,6 +343,38 @@ public class TorqueDebug implements Runnable {
       gameCommand[4] = "-dbgPort";
       gameCommand[5] = "" + options.port;
 
+      // if we are on MacOS, things are different... the game "executable" really is a directory called
+      // "bla.app" or something which has the real "exe" inside a sub directory called "Contents/MacOS/" -
+      // so we have to find it, detect if it is binary and try to give it a whirl...
+      if(isMacOs())
+      {
+    	  Log.log(Log.DEBUG, new TorqueDebug(), "Trying to launch on MAC OS ...");
+			File execFile = new File(gameCommand[0]);
+			if(execFile.isDirectory())
+			{
+				Log.log(Log.DEBUG, new TorqueDebug(), "Directory detected, looking for the REAL binary file ...");
+				String subPath = execFile + "/Contents/MacOS/";
+				File execDir = new File(subPath);
+				if(execDir.exists() && execDir.isDirectory())
+				{
+		    	  	Log.log(Log.DEBUG, new TorqueDebug(), "Ok, executable directory detected, looking for game executable now ...");
+					File[] filesInExecDir = execDir.listFiles();
+					for(int i=0; i<filesInExecDir.length;i++)
+					{
+						if(MiscUtilities.isBinary(new FileInputStream(filesInExecDir[i])))
+						{
+							gameCommand[0] = filesInExecDir[i].getAbsolutePath();
+				    	  	Log.log(Log.DEBUG, new TorqueDebug(), "Ok, game executable detected, trying to launch: " + gameCommand[0]);
+						}
+						else
+						{
+				    	  	Log.log(Log.DEBUG, new TorqueDebug(), "Oops, no executable: " + filesInExecDir[i]);
+						}
+					}
+				}
+			}
+      }
+      
       Runtime rt = Runtime.getRuntime();
       try
       {
@@ -419,7 +467,7 @@ public class TorqueDebug implements Runnable {
       {
          if (doSleep)
          {
-            System.out.println("TorqueDebug: retrying connect...");
+            Log.log(Log.DEBUG, this, "TorqueDebug: retrying connect...");
             try
             {
                Thread.sleep(1000);
@@ -453,12 +501,12 @@ public class TorqueDebug implements Runnable {
                   doSleep = true;
                   continue;
                }
-               System.out.println("TorqueDebug: Create Error: " + e.getLocalizedMessage());
+               Log.log(Log.ERROR, this, "TorqueDebug: Create Error: " + e.getLocalizedMessage());
                listener.createFailed(e);
             }
             else
             {
-               System.out.println("TorqueDebug: Error: " + e.getLocalizedMessage());
+               Log.log(Log.ERROR, this, "TorqueDebug: Error: " + e.getLocalizedMessage());
                listener.error(e);
             }
          }
@@ -1530,6 +1578,7 @@ public class TorqueDebug implements Runnable {
       TorqueBreakPoint bp = findBreakPoint(fileName, breakList, lineNumber);
       if (bp == null)
       {
+    	 Log.log(Log.ERROR, this, "Breakpoint not found: File " + fileName + ", Line " + lineNumber);
          return false;
       }
 
