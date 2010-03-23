@@ -38,6 +38,10 @@
 
 		<!-- preprocessor statements -->
 		<EOL_SPAN TYPE="COMMENT1">//</EOL_SPAN>
+		<SPAN TYPE="COMMENT2">
+			<BEGIN>/*</BEGIN>
+			<END>*/</END>
+		</SPAN>
 		
 		<!-- Operators -->
 		<SEQ TYPE="OPERATOR">=</SEQ>
@@ -89,6 +93,7 @@
 			<KEYWORD1>do</KEYWORD1>
 			<KEYWORD1>else</KEYWORD1>
 			<KEYWORD1>for</KEYWORD1>
+			<KEYWORD1>foreach</KEYWORD1>
 			<KEYWORD1>function</KEYWORD1>
 			<KEYWORD1>if</KEYWORD1>
 			<KEYWORD1>new</KEYWORD1>
