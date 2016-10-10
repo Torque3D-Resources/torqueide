@@ -11,5 +11,6 @@ Download recent Windows version (installer including JEdit 4.3.1, JRE 6u18, all 
 
 If you have any problems, please check the FAQ or post a message in the forums - thanks!
 
-http://torqueide.sourceforge.net/
-https://sourceforge.net/projects/torqueide/
+Source:
+- http://torqueide.sourceforge.net/
+- https://sourceforge.net/projects/torqueide/
